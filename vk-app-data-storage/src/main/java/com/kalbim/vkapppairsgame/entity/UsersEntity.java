@@ -1,6 +1,7 @@
 package com.kalbim.vkapppairsgame.entity;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.Objects;
 
 @Entity
@@ -8,6 +9,8 @@ import java.util.Objects;
 public class UsersEntity {
     private int user;
     private int coins;
+    private Date lastGameTimestamp;
+    private Integer gameCount;
 
     @Id
     @Column(name = "user")
@@ -41,5 +44,25 @@ public class UsersEntity {
     @Override
     public int hashCode() {
         return Objects.hash(user, coins);
+    }
+
+    @Basic
+    @Column(name = "lastGameTimestamp")
+    public Date getLastGameTimestamp() {
+        return lastGameTimestamp;
+    }
+
+    public void setLastGameTimestamp(Date lastGameTimestamp) {
+        this.lastGameTimestamp = lastGameTimestamp;
+    }
+
+    @Basic
+    @Column(name = "gameCount")
+    public Integer getGameCount() {
+        return gameCount;
+    }
+
+    public void setGameCount(Integer gameCount) {
+        this.gameCount = gameCount;
     }
 }
