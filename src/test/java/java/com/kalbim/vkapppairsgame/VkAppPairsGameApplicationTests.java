@@ -1,4 +1,4 @@
-package com.kalbim.vkapppairsgame;
+package java.com.kalbim.vkapppairsgame;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -6,8 +6,5 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class VkAppPairsGameApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
 
 }

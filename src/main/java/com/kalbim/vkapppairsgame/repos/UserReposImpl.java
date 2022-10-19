@@ -41,7 +41,7 @@ public class UserReposImpl implements UserRepos {
         Object[] params = new Object[]{userDto.getCoins(),
                 userDto.getDate(),
                 userDto.getUserId()};
-        String updateRequest = "update users set coins = ? and lastGameTimestamp = ? where user = ?";
+        String updateRequest = "Update users set coins = ? and lastGameTimestamp = ? where user = ?";
         getJdbcOperations().update(updateRequest, params);
     }
 
