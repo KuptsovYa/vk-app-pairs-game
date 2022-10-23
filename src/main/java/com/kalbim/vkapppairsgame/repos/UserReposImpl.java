@@ -41,7 +41,7 @@ public class UserReposImpl implements UserRepos {
         Object[] params = new Object[]{userDto.getCoins(),
                 userDto.getDate(),
                 userDto.getUserId()};
-        String updateRequest = "Update users set coins = ? and lastGameTimestamp = ? where user = ?";
+        String updateRequest = "Update users set coins = ? where user = ?";
         getJdbcOperations().update(updateRequest, params);
     }
 
@@ -50,6 +50,12 @@ public class UserReposImpl implements UserRepos {
         List<UsersEntity> list = new ArrayList<>();
         getJdbcOperations().queryForList(selectRequest, list);
         return list;
+    }
+
+    @Override
+    public void updateGamesCount() {
+        String updateQuery = "Update users set gameCount = gameCount + 1 where gameCount < 2";
+        getJdbcOperations().update(updateQuery);
     }
 
     public JdbcOperations getJdbcOperations() {

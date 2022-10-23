@@ -35,14 +35,6 @@ public class UserServiceImpl implements UserService {
         if (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) {
             userDto.setCoins(userDto.getCoins() + 10);
         }
-        long diff = usersEntity.getLastGameTimestamp().getTime()
-                - new Date(System.currentTimeMillis()).getTime();
-        Date result = new Date(diff);
-        if (result.getHours() / 12 > 1) {
-            userDto.setGameCount("2");
-        } else {
-            userDto.setGameCount("1");
-        }
         userRepos.updateUserData(userDto);
     }
 
@@ -58,5 +50,9 @@ public class UserServiceImpl implements UserService {
                                 .build()
                 ).collect(Collectors.toList());
         return TopPlayersDto.builder().users(dtoList).build();
+    }
+
+    public void updateGameCount() {
+        userRepos.updateGamesCount();
     }
 }
