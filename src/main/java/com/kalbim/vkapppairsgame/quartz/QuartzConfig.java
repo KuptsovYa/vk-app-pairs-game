@@ -5,6 +5,7 @@ import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,8 @@ public class QuartzConfig {
 
     private ApplicationContext applicationContext;
     private DataSource dataSource;
+
+    @Autowired
     public QuartzConfig(ApplicationContext applicationContext, DataSource dataSource) {
         this.applicationContext = applicationContext;
         this.dataSource = dataSource;
@@ -35,7 +38,7 @@ public class QuartzConfig {
     public SchedulerFactoryBean scheduler(Trigger... triggers) {
         SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
         Properties properties = new Properties();
-        properties.setProperty("org.quartz.scheduler.instanceName", "MyInstanceName");
+        properties.setProperty("org.quartz.scheduler.instanceName", "promoDb");
         properties.setProperty("org.quartz.scheduler.instanceId", "Instance1");
         schedulerFactory.setOverwriteExistingJobs(true);
         schedulerFactory.setAutoStartup(true);
@@ -47,17 +50,6 @@ public class QuartzConfig {
             schedulerFactory.setTriggers(triggers);
         }
         return schedulerFactory;
-    }
-
-    static SimpleTriggerFactoryBean createTrigger(JobDetail jobDetail, long pollFrequencyMs, String triggerName) {
-        SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
-        factoryBean.setJobDetail(jobDetail);
-        factoryBean.setStartDelay(0L);
-        factoryBean.setRepeatInterval(pollFrequencyMs);
-        factoryBean.setName(triggerName);
-        factoryBean.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-        factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT);
-        return factoryBean;
     }
 
     static CronTriggerFactoryBean createCronTrigger(JobDetail jobDetail, String cronExpression, String triggerName) {

@@ -8,5 +8,5 @@ public interface UserService {
     UserDto getAllDataOfUser(String userId);
     void updateUserData(UserDto userDto);
     TopPlayersDto getTopPlayers();
-    public void updateGameCount();
+    void updateGameCount();
 }
