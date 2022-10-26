@@ -10,8 +10,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserReposImpl implements UserRepos {
@@ -25,7 +27,7 @@ public class UserReposImpl implements UserRepos {
 
     @Override
     public UsersEntity getAllUserData(String userId) {
-        String sql = "Select user, coins, lastGameTimestamp, gameCount from users where user = ?";
+        String sql = "Select user, coins, gameCount from users where user = ?";
         Object[] params = new Object[]{userId};
         UsersEntity usersEntity = null;
         try {
@@ -52,10 +54,29 @@ public class UserReposImpl implements UserRepos {
     public List<UsersEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
         Object[] params = new Object[]{topPlayersBordersDto.getLeft(),
                 topPlayersBordersDto.getRight()};
-        String selectRequest = "Select user, coins, lastGameTimestamp, gameCount from users order by coins desc limit ?,?";
-        List<UsersEntity> list = new ArrayList<>();
-        getJdbcOperations().queryForList(selectRequest, params, list);
-        return list;
+        String selectRequest = "Select user, coins, gameCount from users order by coins desc limit ?,?";
+        return getJdbcOperations().query(selectRequest, params,
+                (rs, rowNum) -> new UsersEntity(
+                        Integer.parseInt(rs.getString("user")),
+                        Integer.parseInt(rs.getString("coins")),
+                        Integer.parseInt(rs.getString("gameCount"))
+                ));
+    }
+
+    public List<UsersEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
+        String selectFirstPart = "Select user, coins, gameCount from users where user in (";
+        String selectSecondPart = ") order by coins desc limit ?,?";
+
+        String resultList = topPlayersBordersDto.getFriendsList().stream().collect(Collectors.joining(","));
+
+        Object[] params = new Object[]{topPlayersBordersDto.getLeft(), topPlayersBordersDto.getRight()};
+
+        return getJdbcOperations().query(selectFirstPart + resultList + selectSecondPart, params,
+                (rs, rowNum) -> new UsersEntity(
+                        Integer.parseInt(rs.getString("user")),
+                        Integer.parseInt(rs.getString("coins")),
+                        Integer.parseInt(rs.getString("gameCount"))
+                ));
     }
 
     @Override

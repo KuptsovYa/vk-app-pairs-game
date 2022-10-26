@@ -14,8 +14,6 @@ public class UserDto {
     private String userId;
     @JsonProperty("coins")
     private String coins;
-    @JsonProperty("lastGameDate")
-    private Date date;
     @JsonProperty("gameCount")
     private String gameCount;
 }

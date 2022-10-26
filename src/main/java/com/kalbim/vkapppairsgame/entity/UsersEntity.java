@@ -1,15 +1,19 @@
 package com.kalbim.vkapppairsgame.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Objects;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users", schema = "promodb", catalog = "")
 public class UsersEntity {
     private int user;
     private int coins;
-    private Date lastGameTimestamp;
     private Integer gameCount;
 
     @Id
@@ -44,16 +48,6 @@ public class UsersEntity {
     @Override
     public int hashCode() {
         return Objects.hash(user, coins);
-    }
-
-    @Basic
-    @Column(name = "lastGameTimestamp")
-    public Date getLastGameTimestamp() {
-        return lastGameTimestamp;
-    }
-
-    public void setLastGameTimestamp(Date lastGameTimestamp) {
-        this.lastGameTimestamp = lastGameTimestamp;
     }
 
     @Basic

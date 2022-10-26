@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
         return UserDto.builder()
                 .coins(String.valueOf(usersEntity.getCoins()))
                 .userId(String.valueOf(usersEntity.getUser()))
+                .gameCount(String.valueOf(usersEntity.getGameCount()))
                 .build();
     }
 
@@ -46,13 +47,21 @@ public class UserServiceImpl implements UserService {
 
     public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
         List<UsersEntity> entityList = userRepos.getTopPlayers(topPlayersBordersDto);
-        List<UserDto> dtoList = entityList.stream()
+        return convertFromEntityToDto(entityList);
+    }
+
+    public TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
+        List<UsersEntity> entityList = userRepos.getTopPlayersFromFriends(topPlayersBordersDto);
+        return convertFromEntityToDto(entityList);
+    }
+
+    private TopPlayersDto convertFromEntityToDto(List<UsersEntity> list) {
+        List<UserDto> dtoList = list.stream()
                 .map(entity ->
                         UserDto.builder()
                                 .coins(String.valueOf(entity.getCoins()))
                                 .gameCount(String.valueOf(entity.getGameCount()))
                                 .userId(String.valueOf(entity.getUser()))
-                                .date(entity.getLastGameTimestamp())
                                 .build()
                 ).collect(Collectors.toList());
         return TopPlayersDto.builder().users(dtoList).build();

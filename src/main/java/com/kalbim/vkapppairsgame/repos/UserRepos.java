@@ -11,5 +11,6 @@ public interface UserRepos {
     UsersEntity getAllUserData(String userId);
     void updateUserData(UserDto userDto);
     List<UsersEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto);
+    List<UsersEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto);
     void updateGamesCount();
 }

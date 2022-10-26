@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "https://user105560317-clvrcexc.wormhole.vk-apps.com")
+@CrossOrigin(origins = "https://user105560317-7uflfuqk.wormhole.vk-apps.com")
 public class RestRequestHandler {
 
     private final UserService userService;
@@ -39,9 +39,15 @@ public class RestRequestHandler {
         return userService.updateUserData(userDto);
     }
 
-    @GetMapping("v1/api/getTopPlayers")
+    @PostMapping("v1/api/getTopPlayers")
     @Transactional
     public TopPlayersDto getTopPlayers(@RequestBody TopPlayersBordersDto topPlayersBordersDto) {
         return userService.getTopPlayers(topPlayersBordersDto);
+    }
+
+    @PostMapping("v1/api/getTopPlayersFriends")
+    @Transactional
+    public TopPlayersDto getTopPlayersFromFriends(@RequestBody TopPlayersBordersDto topPlayersBordersDto) {
+        return userService.getTopPlayersFromFriends(topPlayersBordersDto);
     }
 }
