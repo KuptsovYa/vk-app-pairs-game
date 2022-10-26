@@ -1,6 +1,8 @@
 package com.kalbim.vkapppairsgame.repos;
 
+import com.kalbim.vkapppairsgame.dto.PlayerCoinsDto;
 import com.kalbim.vkapppairsgame.entity.PromoEntity;
+import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -17,12 +19,17 @@ public class PromoReposImpl implements PromoRepos{
     }
 
     @Override
-    public PromoEntity getPromoByCoins(String coinsAmount) {
-        String request = "Select idpromo, promo, price, used where price = ?" +
-                " and used <> '1'";
-        Object[] params = new Object[]{coinsAmount};
-        return getJdbcOperations().queryForObject(request,
+    public PromoEntity getPromoByCoins(PlayerCoinsDto playerCoinsDto) {
+        String selectRequest = "Select idpromo, promo, price, used from promo where price = ?" +
+                " and used <> 1";
+        Object[] params = new Object[]{playerCoinsDto.getCoins()};
+        PromoEntity promoEntity = getJdbcOperations().queryForObject(selectRequest,
                 params, new BeanPropertyRowMapper<>(PromoEntity.class));
+
+        params[0] = promoEntity.getIdpromo();
+        String updateRequest = "Update promo set used = 1 where idPromo = ?";
+        getJdbcOperations().update(updateRequest, params);
+        return promoEntity;
     }
 
     public JdbcOperations getJdbcOperations() {

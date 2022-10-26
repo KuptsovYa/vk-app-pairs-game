@@ -1,15 +1,16 @@
 package com.kalbim.vkapppairsgame.repos;
 
+import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
+import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Repository
@@ -26,11 +27,13 @@ public class UserReposImpl implements UserRepos {
     public UsersEntity getAllUserData(String userId) {
         String sql = "Select user, coins, lastGameTimestamp, gameCount from users where user = ?";
         Object[] params = new Object[]{userId};
-        UsersEntity usersEntity = getJdbcOperations().queryForObject(sql,
-                params, new BeanPropertyRowMapper<>(UsersEntity.class));
-        if (usersEntity == null) {
-            String request = "insert into users values(?, ?)";
-            Object[] paramsToInsert = new Object[]{userId, 0};
+        UsersEntity usersEntity = null;
+        try {
+            usersEntity = getJdbcOperations().queryForObject(sql,
+                    params, new BeanPropertyRowMapper<>(UsersEntity.class));
+        } catch (JDBCException | EmptyResultDataAccessException exception) {
+            String request = "insert into users(user, coins, gameCount) values(?, ?, ?)";
+            Object[] paramsToInsert = new Object[]{userId, 0, 2};
             getJdbcOperations().update(request, paramsToInsert);
             usersEntity = new UsersEntity();
             usersEntity.setUser(Integer.parseInt(userId));
@@ -41,16 +44,17 @@ public class UserReposImpl implements UserRepos {
     @Override
     public void updateUserData(UserDto userDto) {
         Object[] params = new Object[]{userDto.getCoins(),
-                userDto.getDate(),
                 userDto.getUserId()};
-        String updateRequest = "Update users set coins = ? where user = ?";
+        String updateRequest = "Update users set coins = ?, gameCount = gameCount - 1 where user = ?";
         getJdbcOperations().update(updateRequest, params);
     }
 
-    public List<UsersEntity> getTopPlayers() {
-        String selectRequest = "Select user, coins, lastGameTimestamp, gameCount from users order by coins DESC limit 100";
+    public List<UsersEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
+        Object[] params = new Object[]{topPlayersBordersDto.getLeft(),
+                topPlayersBordersDto.getRight()};
+        String selectRequest = "Select user, coins, lastGameTimestamp, gameCount from users order by coins desc limit ?,?";
         List<UsersEntity> list = new ArrayList<>();
-        getJdbcOperations().queryForList(selectRequest, list);
+        getJdbcOperations().queryForList(selectRequest, params, list);
         return list;
     }
 

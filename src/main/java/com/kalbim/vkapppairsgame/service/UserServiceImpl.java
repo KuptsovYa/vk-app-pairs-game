@@ -1,5 +1,6 @@
 package com.kalbim.vkapppairsgame.service;
 
+import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
@@ -30,16 +31,21 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    public void updateUserData(UserDto userDto) {
+    public UserDto updateUserData(UserDto userDto) {
         UsersEntity usersEntity = userRepos.getAllUserData(userDto.getUserId());
         if (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) {
             userDto.setCoins(userDto.getCoins() + 10);
         }
         userRepos.updateUserData(userDto);
+        UsersEntity updatedUsersEntity = userRepos.getAllUserData(userDto.getUserId());
+        return UserDto.builder()
+                .userId(String.valueOf(updatedUsersEntity.getUser()))
+                .gameCount(String.valueOf(updatedUsersEntity.getGameCount()))
+                .coins(String.valueOf(updatedUsersEntity.getCoins())).build();
     }
 
-    public TopPlayersDto getTopPlayers() {
-        List<UsersEntity> entityList = userRepos.getTopPlayers();
+    public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
+        List<UsersEntity> entityList = userRepos.getTopPlayers(topPlayersBordersDto);
         List<UserDto> dtoList = entityList.stream()
                 .map(entity ->
                         UserDto.builder()

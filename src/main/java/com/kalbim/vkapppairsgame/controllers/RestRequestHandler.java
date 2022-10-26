@@ -1,19 +1,15 @@
 package com.kalbim.vkapppairsgame.controllers;
 
 
-import com.kalbim.vkapppairsgame.dto.PromoDto;
-import com.kalbim.vkapppairsgame.dto.TopPlayersDto;
-import com.kalbim.vkapppairsgame.dto.UserDto;
+import com.kalbim.vkapppairsgame.dto.*;
 import com.kalbim.vkapppairsgame.service.PromoService;
 import com.kalbim.vkapppairsgame.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "https://user105560317-clvrcexc.wormhole.vk-apps.com")
 public class RestRequestHandler {
 
     private final UserService userService;
@@ -26,23 +22,26 @@ public class RestRequestHandler {
     }
 
     @GetMapping("v1/api/getUserData/{vkUserId}")
+    @Transactional
     public UserDto getAllUserData(@PathVariable String vkUserId) {
         return userService.getAllDataOfUser(vkUserId);
     }
 
+    @PostMapping("v1/api/getPromo/")
     @Transactional
-    @GetMapping("v1/api/getPromo/{coins}")
-    public PromoDto getPromoByCoins(@PathVariable String coins) {
-        return promoService.returnPromo(coins);
+    public PromoDto getPromoByCoins(@RequestBody PlayerCoinsDto playerCoinsDto) {
+        return promoService.returnPromo(playerCoinsDto);
     }
 
     @PostMapping("v1/api/up")
-    public void updateUserData(UserDto userDto) {
-        userService.updateUserData(userDto);
+    @Transactional
+    public UserDto updateUserData(@RequestBody UserDto userDto) {
+        return userService.updateUserData(userDto);
     }
 
     @GetMapping("v1/api/getTopPlayers")
-    public TopPlayersDto getTopPlayers() {
-        return userService.getTopPlayers();
+    @Transactional
+    public TopPlayersDto getTopPlayers(@RequestBody TopPlayersBordersDto topPlayersBordersDto) {
+        return userService.getTopPlayers(topPlayersBordersDto);
     }
 }
