@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "https://user105560317-7uflfuqk.wormhole.vk-apps.com")
+@CrossOrigin(origins = "*")//todo
 public class RestRequestHandler {
 
     private final UserService userService;
