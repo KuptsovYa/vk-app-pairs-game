@@ -16,6 +16,8 @@ public class UsersEntity {
     private int coins;
     private Integer gameCount;
 
+    private Integer notifications;
+
     @Id
     @Column(name = "user")
     public int getUser() {
@@ -58,5 +60,15 @@ public class UsersEntity {
 
     public void setGameCount(Integer gameCount) {
         this.gameCount = gameCount;
+    }
+
+    @Basic
+    @Column(name = "notifications")
+    public Integer getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Integer notifications) {
+        this.notifications = notifications;
     }
 }

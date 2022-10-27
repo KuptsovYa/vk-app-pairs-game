@@ -16,4 +16,6 @@ public class UserDto {
     private String coins;
     @JsonProperty("gameCount")
     private String gameCount;
+    @JsonProperty("notifications")
+    private String notifications;
 }

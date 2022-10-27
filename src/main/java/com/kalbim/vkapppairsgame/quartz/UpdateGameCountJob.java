@@ -1,6 +1,8 @@
 package com.kalbim.vkapppairsgame.quartz;
 
 import com.kalbim.vkapppairsgame.service.UserService;
+import com.vk.api.sdk.exceptions.ApiException;
+import com.vk.api.sdk.exceptions.ClientException;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -18,5 +20,12 @@ public class UpdateGameCountJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         userService.updateGameCount();
+        try {
+            userService.sendNotifications();
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

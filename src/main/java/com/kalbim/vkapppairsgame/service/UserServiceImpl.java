@@ -5,11 +5,15 @@ import com.kalbim.vkapppairsgame.dto.TopPlayersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
+import com.kalbim.vkapppairsgame.vk.VkApiClass;
+import com.vk.api.sdk.exceptions.ApiException;
+import com.vk.api.sdk.exceptions.ClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +33,7 @@ public class UserServiceImpl implements UserService {
                 .coins(String.valueOf(usersEntity.getCoins()))
                 .userId(String.valueOf(usersEntity.getUser()))
                 .gameCount(String.valueOf(usersEntity.getGameCount()))
+                .notifications(String.valueOf(usersEntity.getNotifications()))
                 .build();
     }
 
@@ -42,7 +47,9 @@ public class UserServiceImpl implements UserService {
         return UserDto.builder()
                 .userId(String.valueOf(updatedUsersEntity.getUser()))
                 .gameCount(String.valueOf(updatedUsersEntity.getGameCount()))
-                .coins(String.valueOf(updatedUsersEntity.getCoins())).build();
+                .coins(String.valueOf(updatedUsersEntity.getCoins()))
+                .notifications(String.valueOf(usersEntity.getNotifications()))
+                .build();
     }
 
     public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
@@ -65,6 +72,31 @@ public class UserServiceImpl implements UserService {
                                 .build()
                 ).collect(Collectors.toList());
         return TopPlayersDto.builder().users(dtoList).build();
+    }
+
+
+    public void sendNotifications() throws ClientException, ApiException {
+        VkApiClass vkApiClass = new VkApiClass();
+
+        List<UsersEntity> usersEntities = userRepos.getAllPlayersWithNotifications();
+        Integer[] idsArray = usersEntities.stream().map(UsersEntity::getUser).toArray(Integer[]::new);
+        List<Integer> idsList = new ArrayList<>();
+        for (int i = 0; i <= idsArray.length; i++) {
+            idsList.add(idsArray[i]);
+            if (i % 10 == 0) { //just try to not forget return value to 100
+                vkApiClass.sendNotification(idsList);
+                idsList.clear();
+            }
+            if (i == idsArray.length - 1) {
+                vkApiClass.sendNotification(idsList);
+                idsList.clear();
+            }
+        }
+    }
+
+    @Override
+    public void updateNotificationStatus(UserDto userDto) {
+        userRepos.updateNotificationsStatus(userDto);
     }
 
     public void updateGameCount() {

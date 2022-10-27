@@ -13,4 +13,6 @@ public interface UserRepos {
     List<UsersEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto);
     List<UsersEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto);
     void updateGamesCount();
+    List<UsersEntity> getAllPlayersWithNotifications();
+    void updateNotificationsStatus(UserDto userDto);
 }
