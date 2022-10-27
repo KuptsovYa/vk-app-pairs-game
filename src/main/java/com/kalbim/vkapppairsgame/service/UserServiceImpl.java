@@ -6,8 +6,11 @@ import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
 import com.kalbim.vkapppairsgame.vk.VkApiClass;
+import com.vk.api.sdk.client.TransportClient;
+import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,7 +86,7 @@ public class UserServiceImpl implements UserService {
         List<Integer> idsList = new ArrayList<>();
         for (int i = 0; i <= idsArray.length; i++) {
             idsList.add(idsArray[i]);
-            if (i % 10 == 0) { //just try to not forget return value to 100
+            if (i % 100 == 0) { //just try to not forget return value to 100
                 vkApiClass.sendNotification(idsList);
                 idsList.clear();
             }
