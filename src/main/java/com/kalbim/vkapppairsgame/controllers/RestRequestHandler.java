@@ -50,17 +50,4 @@ public class RestRequestHandler {
     public TopPlayersDto getTopPlayersFromFriends(@RequestBody TopPlayersBordersDto topPlayersBordersDto) {
         return userService.getTopPlayersFromFriends(topPlayersBordersDto);
     }
-
-    @PostMapping("v1/api/updateNotificationStatus")
-    @Transactional
-    public UserDto updateNotificationStatus(@RequestBody UserDto userDto) {
-        userService.updateNotificationStatus(userDto);
-        return userDto;
-    }
-
-    @PostMapping("v1/api/updateCirc")
-    @Transactional
-    public UserDto updateCircumstances(@RequestBody SingleCircumstanceUpdateDto scuDto) {
-        return userService.updateCircumstances(scuDto);
-    }
 }
