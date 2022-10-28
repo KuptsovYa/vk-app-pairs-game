@@ -1,5 +1,6 @@
 package com.kalbim.vkapppairsgame.repos;
 
+import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
@@ -15,4 +16,5 @@ public interface UserRepos {
     void updateGamesCount();
     List<UsersEntity> getAllPlayersWithNotifications();
     void updateNotificationsStatus(UserDto userDto);
+    void updateCircumstances(SingleCircumstanceUpdateDto userDto);
 }

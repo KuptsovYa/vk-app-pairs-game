@@ -57,4 +57,10 @@ public class RestRequestHandler {
         userService.updateNotificationStatus(userDto);
         return userDto;
     }
+
+    @PostMapping("v1/api/updateCirc")
+    @Transactional
+    public UserDto updateCircumstances(@RequestBody SingleCircumstanceUpdateDto scuDto) {
+        return userService.updateCircumstances(scuDto);
+    }
 }

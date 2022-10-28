@@ -1,5 +1,6 @@
 package com.kalbim.vkapppairsgame.service;
 
+import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
@@ -32,12 +33,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDto getAllDataOfUser(String userId) {
         UsersEntity usersEntity = userRepos.getAllUserData(userId);
-        return UserDto.builder()
-                .coins(String.valueOf(usersEntity.getCoins()))
-                .userId(String.valueOf(usersEntity.getUser()))
-                .gameCount(String.valueOf(usersEntity.getGameCount()))
-                .notifications(String.valueOf(usersEntity.getNotifications()))
-                .build();
+        return userDtoAllFieldsBuilder(usersEntity);
     }
 
     public UserDto updateUserData(UserDto userDto) {
@@ -46,13 +42,7 @@ public class UserServiceImpl implements UserService {
             userDto.setCoins(userDto.getCoins() + 10);
         }
         userRepos.updateUserData(userDto);
-        UsersEntity updatedUsersEntity = userRepos.getAllUserData(userDto.getUserId());
-        return UserDto.builder()
-                .userId(String.valueOf(updatedUsersEntity.getUser()))
-                .gameCount(String.valueOf(updatedUsersEntity.getGameCount()))
-                .coins(String.valueOf(updatedUsersEntity.getCoins()))
-                .notifications(String.valueOf(usersEntity.getNotifications()))
-                .build();
+        return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
     }
 
     public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
@@ -95,6 +85,26 @@ public class UserServiceImpl implements UserService {
                 idsList.clear();
             }
         }
+    }
+
+    @Override
+    public UserDto updateCircumstances(SingleCircumstanceUpdateDto singleCircumstanceUpdateDto) {
+        UsersEntity usersEntity = userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId());
+        StringBuilder userCircs = new StringBuilder(usersEntity.getCircs());
+        userCircs.setCharAt((Integer.parseInt(singleCircumstanceUpdateDto.getCircumstance())), '1');
+        singleCircumstanceUpdateDto.setCircumstance(userCircs.toString());
+        userRepos.updateCircumstances(singleCircumstanceUpdateDto);
+        return userDtoAllFieldsBuilder(userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId()));
+    }
+
+    private UserDto userDtoAllFieldsBuilder(UsersEntity entity) {
+        return UserDto.builder()
+                .userId(String.valueOf(entity.getUser()))
+                .gameCount(String.valueOf(entity.getGameCount()))
+                .coins(String.valueOf(entity.getCoins()))
+                .notifications(String.valueOf(entity.getNotifications()))
+                .circs(entity.getCircs())
+                .build();
     }
 
     @Override

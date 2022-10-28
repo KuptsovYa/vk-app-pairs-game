@@ -9,37 +9,30 @@ import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.ServiceClientCredentialsFlowResponse;
 import com.vk.api.sdk.queries.secure.SecureSendNotificationQuery;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class VkApiClass {
 
-    @Value("${vk.client.secret}")
-    private String clientSecret;
     @Value("${vk.app.id}")
-    private String applicationId;
+    private String applicationId = "51430029";
+    @Value("${vk.client.secret}")
+    private String clientSecret = "wL2P2I3sG4rpIqkpn5P2";
     @Value("${vk.service.access.key}")
-    private String serviceAccessKey;
-    private final VkApiClient vkApiClient;
-
-    public VkApiClass() {
-        TransportClient transportClient = new HttpTransportClient();
-        this.vkApiClient = new VkApiClient(transportClient);
-    }
+    private String serviceAccessKey = "53e0cc7a53e0cc7a53e0cc7ad250f00ef7553e053e0cc7a30c8967c8bd2b08c13099d0c";
 
     public void sendNotification(List<Integer> users) throws ClientException, ApiException {
-        SecureSendNotificationQuery secureSendNotificationQuery = getVkApiClient().secure().sendNotification(createServiceActor(), "ПРИВЕТ!!11!!1!!");
+        TransportClient transportClient = new HttpTransportClient();
+        VkApiClient vkApiClient = new VkApiClient(transportClient);
+        SecureSendNotificationQuery secureSendNotificationQuery = vkApiClient.secure().sendNotification(createServiceActor(vkApiClient), "ПРИВЕТ!!11!!1!!");
         secureSendNotificationQuery.userIds(users);
         secureSendNotificationQuery.unsafeParam("access_token", getServiceAccessKey());
         List<Integer> res = secureSendNotificationQuery.execute();
     }
 
-    private ServiceActor createServiceActor() throws ClientException, ApiException {
-        TransportClient transportClient = new HttpTransportClient();
-        VkApiClient vk = new VkApiClient(transportClient);
-
+    private ServiceActor createServiceActor(VkApiClient vk) throws ClientException, ApiException {
         Integer appId = Integer.parseInt(getApplicationId());
 
         ServiceClientCredentialsFlowResponse authResponse = vk.oAuth()
@@ -55,10 +48,6 @@ public class VkApiClass {
 
     public String getApplicationId() {
         return applicationId;
-    }
-
-    public VkApiClient getVkApiClient() {
-        return vkApiClient;
     }
 
     public String getServiceAccessKey() {

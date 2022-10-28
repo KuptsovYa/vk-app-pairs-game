@@ -1,5 +1,6 @@
 package com.kalbim.vkapppairsgame.service;
 
+import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
@@ -15,4 +16,5 @@ public interface UserService {
     void updateGameCount();
     void sendNotifications() throws ClientException, ApiException;
     void updateNotificationStatus(UserDto userDto);
+    UserDto updateCircumstances(SingleCircumstanceUpdateDto singleCircumstanceUpdateDto);
 }

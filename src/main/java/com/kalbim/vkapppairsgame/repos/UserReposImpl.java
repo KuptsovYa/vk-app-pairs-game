@@ -1,5 +1,6 @@
 package com.kalbim.vkapppairsgame.repos;
 
+import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
@@ -26,15 +27,15 @@ public class UserReposImpl implements UserRepos {
 
     @Override
     public UsersEntity getAllUserData(String userId) {
-        String sql = "Select user, coins, gameCount, notifications from users where user = ?;";
+        String sql = "Select user, coins, gameCount, notifications, circs from users where user = ?;";
         Object[] params = new Object[]{userId};
         UsersEntity usersEntity = null;
         try {
             usersEntity = getJdbcOperations().queryForObject(sql,
                     params, new BeanPropertyRowMapper<>(UsersEntity.class));
         } catch (JDBCException | EmptyResultDataAccessException exception) {
-            String request = "insert into users(user, coins, gameCount, notifications) values(?, ?, ?, ?);";
-            Object[] paramsToInsert = new Object[]{userId, 0, 2, 0};
+            String request = "insert into users(user, coins, gameCount, notifications, circs) values(?, ?, ?, ?, ?);";
+            Object[] paramsToInsert = new Object[]{userId, 0, 2, 0, "00000"};
             getJdbcOperations().update(request, paramsToInsert);
             usersEntity = new UsersEntity();
             usersEntity.setUser(Integer.parseInt(userId));
@@ -53,18 +54,19 @@ public class UserReposImpl implements UserRepos {
     public List<UsersEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
         Object[] params = new Object[]{topPlayersBordersDto.getLeft(),
                 topPlayersBordersDto.getRight()};
-        String selectRequest = "Select user, coins, gameCount, notifications from users order by coins desc limit ?,?;";
+        String selectRequest = "Select user, coins, gameCount, notifications, circs from users order by coins desc limit ?,?;";
         return getJdbcOperations().query(selectRequest, params,
                 (rs, rowNum) -> new UsersEntity(
                         Integer.parseInt(rs.getString("user")),
                         Integer.parseInt(rs.getString("coins")),
                         Integer.parseInt(rs.getString("gameCount")),
-                        Integer.parseInt(rs.getString("notifications"))
+                        Integer.parseInt(rs.getString("notifications")),
+                        rs.getString("circs")
                 ));
     }
 
     public List<UsersEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
-        String selectFirstPart = "Select user, coins, gameCount, notifications from users where user in (";
+        String selectFirstPart = "Select user, coins, gameCount, notifications, circs from users where user in (";
         String selectSecondPart = ") order by coins desc limit ?,?;";
 
         String resultList = topPlayersBordersDto.getFriendsList().stream().collect(Collectors.joining(","));
@@ -76,7 +78,8 @@ public class UserReposImpl implements UserRepos {
                         Integer.parseInt(rs.getString("user")),
                         Integer.parseInt(rs.getString("coins")),
                         Integer.parseInt(rs.getString("gameCount")),
-                        Integer.parseInt(rs.getString("notifications"))
+                        Integer.parseInt(rs.getString("notifications")),
+                        rs.getString("circs")
                 ));
     }
 
@@ -87,19 +90,27 @@ public class UserReposImpl implements UserRepos {
     }
 
     public List<UsersEntity> getAllPlayersWithNotifications() {
-        String selectQuery = "Select user, coins, gameCount, notifications from users where notifications = 1;";
+        String selectQuery = "Select user, coins, gameCount, notifications, circs from users where notifications = 1;";
         return getJdbcOperations().query(selectQuery, (rs, rowNum) -> new UsersEntity(
                 Integer.parseInt(rs.getString("user")),
                 Integer.parseInt(rs.getString("coins")),
                 Integer.parseInt(rs.getString("gameCount")),
-                Integer.parseInt(rs.getString("notifications"))
+                Integer.parseInt(rs.getString("notifications")),
+                rs.getString("circs")
         ));
     }
 
     @Override
     public void updateNotificationsStatus(UserDto userDto) {
-        Object[] params = new Object[]{ userDto.getNotifications(), userDto.getUserId()};
         String updateQuery = "Update users set notifications = ? where user = ?;";
+        Object[] params = new Object[]{ userDto.getNotifications(), userDto.getUserId()};
+        getJdbcOperations().update(updateQuery, params);
+    }
+
+    @Override
+    public void updateCircumstances(SingleCircumstanceUpdateDto userDto) {
+        String updateQuery = "Update users set circs = ? where user = ?";
+        Object[] params = new Object[]{userDto.getCircumstance(), userDto.getUserId()};
         getJdbcOperations().update(updateQuery, params);
     }
 
