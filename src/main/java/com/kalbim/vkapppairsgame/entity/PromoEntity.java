@@ -50,20 +50,4 @@ public class PromoEntity {
     public void setUsed(int used) {
         this.used = used;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PromoEntity that = (PromoEntity) o;
-        return idpromo == that.idpromo &&
-                price == that.price &&
-                used == that.used &&
-                Objects.equals(promo, that.promo);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idpromo, promo, price, used);
-    }
 }

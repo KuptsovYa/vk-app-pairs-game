@@ -4,20 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import java.sql.Date;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto {
+public class SingleCircumstanceUpdateDto {
+
     @JsonProperty("userId")
     private String userId;
-    @JsonProperty("coins")
-    private String coins;
-    @JsonProperty("gameCount")
-    private String gameCount;
-    @JsonProperty("notifications")
-    private String notifications;
-    @JsonProperty("circumstances")
-    private String circs;
+    @JsonProperty("circumstance")
+    private String circumstance;
 }

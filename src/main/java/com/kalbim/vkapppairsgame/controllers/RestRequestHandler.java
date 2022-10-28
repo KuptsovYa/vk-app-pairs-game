@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")//todo
+@CrossOrigin(origins = "*")
 public class RestRequestHandler {
 
     private final UserService userService;

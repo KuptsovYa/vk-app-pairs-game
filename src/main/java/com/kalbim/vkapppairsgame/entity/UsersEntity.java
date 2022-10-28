@@ -15,6 +15,8 @@ public class UsersEntity {
     private int user;
     private int coins;
     private Integer gameCount;
+    private Integer notifications;
+    private String circs;
 
     @Id
     @Column(name = "user")
@@ -36,20 +38,6 @@ public class UsersEntity {
         this.coins = coins;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UsersEntity that = (UsersEntity) o;
-        return user == that.user &&
-                coins == that.coins;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(user, coins);
-    }
-
     @Basic
     @Column(name = "gameCount")
     public Integer getGameCount() {
@@ -58,5 +46,24 @@ public class UsersEntity {
 
     public void setGameCount(Integer gameCount) {
         this.gameCount = gameCount;
+    }
+
+    @Basic
+    @Column(name = "notifications")
+    public Integer getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Integer notifications) {
+        this.notifications = notifications;
+    }
+    @Basic
+    @Column(name = "circs")
+    public String getCircs() {
+        return circs;
+    }
+
+    public void setCircs(String circs) {
+        this.circs = circs;
     }
 }
