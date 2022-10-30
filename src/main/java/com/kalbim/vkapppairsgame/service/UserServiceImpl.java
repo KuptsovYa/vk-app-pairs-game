@@ -1,23 +1,15 @@
 package com.kalbim.vkapppairsgame.service;
 
-import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
-import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
-import com.kalbim.vkapppairsgame.dto.TopPlayersDto;
-import com.kalbim.vkapppairsgame.dto.UserDto;
+import com.kalbim.vkapppairsgame.dto.*;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
 import com.kalbim.vkapppairsgame.vk.VkApiClass;
-import com.vk.api.sdk.client.TransportClient;
-import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
-import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,6 +102,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateNotificationStatus(UserDto userDto) {
         userRepos.updateNotificationsStatus(userDto);
+    }
+
+    @Override
+    public UserPlaceInLeadBoardDto getUserPlaceInLeaderBoard(UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        userPlaceInLeadBoardDto.setOrderNumber(String.valueOf(userRepos.getUserPlaceInTotalLeaderboard(
+                userPlaceInLeadBoardDto).get(0).get("number")).replace(".0", ""));
+        userPlaceInLeadBoardDto.setTotalUsersCount(String.valueOf(userRepos.getTotalPlayers()));
+        return userPlaceInLeadBoardDto;
+    }
+
+    public UserPlaceInLeadBoardDto getUserPlaceInFriendsLeaderBoard(UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        userPlaceInLeadBoardDto.setOrderNumber(String.valueOf(userRepos.getUserPlaceInFriendsLeaderboard(
+                userPlaceInLeadBoardDto).get(0).get("number")).replace(".0", ""));
+        userPlaceInLeadBoardDto.setTotalUsersCount(String.valueOf(userRepos.getTotalPlayers(userPlaceInLeadBoardDto.getFriendsList())));
+        return userPlaceInLeadBoardDto;
     }
 
     public void updateGameCount() {

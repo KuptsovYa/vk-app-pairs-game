@@ -3,6 +3,7 @@ package com.kalbim.vkapppairsgame.repos;
 import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
+import com.kalbim.vkapppairsgame.dto.UserPlaceInLeadBoardDto;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -103,7 +105,7 @@ public class UserReposImpl implements UserRepos {
     @Override
     public void updateNotificationsStatus(UserDto userDto) {
         String updateQuery = "Update users set notifications = ? where user = ?;";
-        Object[] params = new Object[]{ userDto.getNotifications(), userDto.getUserId()};
+        Object[] params = new Object[]{userDto.getNotifications(), userDto.getUserId()};
         getJdbcOperations().update(updateQuery, params);
     }
 
@@ -112,6 +114,35 @@ public class UserReposImpl implements UserRepos {
         String updateQuery = "Update users set circs = ? where user = ?";
         Object[] params = new Object[]{userDto.getCircumstance(), userDto.getUserId()};
         getJdbcOperations().update(updateQuery, params);
+    }
+
+    //
+
+    public List<Map<String, Object>> getUserPlaceInTotalLeaderboard(UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        String selectQuery = "select * from (select user, " +
+                "(@row_number:=@row_number + 1) as number from users, (SELECT @row_number:=0) as temp order by coins desc)" +
+                " as result where result.user = ?";
+        Object[] params = new Object[]{userPlaceInLeadBoardDto.getUserId()};
+        return getJdbcOperations().queryForList(selectQuery, params);
+    }
+
+    public List<Map<String, Object>> getUserPlaceInFriendsLeaderboard(UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        String selectQuery = "select * from (select user, (@row_number:=@row_number + 1) as number " +
+                "from users, (SELECT @row_number:=0) as temp where user in (";
+        String friendsList = userPlaceInLeadBoardDto.getFriendsList().stream().collect(Collectors.joining(","));
+        Object[] params = new Object[]{userPlaceInLeadBoardDto.getUserId()};
+        return getJdbcOperations().queryForList(selectQuery + friendsList + ") order by coins desc) as result where result.user = ?", params);
+    }
+
+    public Integer getTotalPlayers(List<String> friendsList) {
+        String select = "select count(*) from users where user in (";
+        String resultList = friendsList.stream().collect(Collectors.joining(","));
+        return getJdbcOperations().queryForObject(select + resultList + ");", Integer.class);
+    }
+
+    public Integer getTotalPlayers() {
+        String select = "select count(*) from users";
+        return getJdbcOperations().queryForObject(select, Integer.class);
     }
 
     public JdbcOperations getJdbcOperations() {
