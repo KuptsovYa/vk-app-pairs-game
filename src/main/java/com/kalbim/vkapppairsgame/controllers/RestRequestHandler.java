@@ -3,6 +3,7 @@ package com.kalbim.vkapppairsgame.controllers;
 
 import com.kalbim.vkapppairsgame.dto.*;
 import com.kalbim.vkapppairsgame.service.PromoService;
+import com.kalbim.vkapppairsgame.service.TimeService;
 import com.kalbim.vkapppairsgame.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +15,13 @@ public class RestRequestHandler {
 
     private final UserService userService;
     private final PromoService promoService;
+    private final TimeService timeService;
 
     @Autowired
-    public RestRequestHandler(UserService userService, PromoService promoService) {
+    public RestRequestHandler(UserService userService, PromoService promoService, TimeService timeService) {
         this.userService = userService;
         this.promoService = promoService;
+        this.timeService = timeService;
     }
 
     @GetMapping("v1/api/getUserData/{vkUserId}")
@@ -62,5 +65,20 @@ public class RestRequestHandler {
     @Transactional
     public UserDto updateCircumstances(@RequestBody SingleCircumstanceUpdateDto scuDto) {
         return userService.updateCircumstances(scuDto);
+    }
+
+    @GetMapping("v1/api/serverTime")
+    public ServerTimeDto getServerTime() {
+        return timeService.returnServerTime();
+    }
+
+    @PostMapping("/v1/api/getPlaceInTop")
+    public UserPlaceInLeadBoardDto getUserPlaceInLeaderBoard(@RequestBody UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        return userService.getUserPlaceInLeaderBoard(userPlaceInLeadBoardDto);
+    }
+
+    @PostMapping("/v1/api/getPlaceInTopFriends")
+    public UserPlaceInLeadBoardDto getUserPlaceInFriendsLeaderBoard(@RequestBody UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        return userService.getUserPlaceInFriendsLeaderBoard(userPlaceInLeadBoardDto);
     }
 }
