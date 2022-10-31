@@ -33,6 +33,11 @@ public class UserServiceImpl implements UserService {
         if (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) {
             userDto.setCoins(userDto.getCoins() + 10);
         }
+        if (Integer.parseInt(userDto.getGameCount()) == 0) {
+            userDto.setGameCount("0");
+        } else {
+            userDto.setGameCount("1");
+        }
         userRepos.updateUserData(userDto);
         return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
     }

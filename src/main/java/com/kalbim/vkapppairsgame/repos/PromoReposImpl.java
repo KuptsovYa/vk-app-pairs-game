@@ -20,7 +20,7 @@ public class PromoReposImpl implements PromoRepos{
     @Override
     public PromoEntity getPromoByCoins(PlayerCoinsDto playerCoinsDto) {
         String selectRequest = "Select idpromo, promo, price, used from promo where price = ?" +
-                " and used <> 1";
+                " and used <> 1 limit 1";
         Object[] params = new Object[]{playerCoinsDto.getCoins()};
         PromoEntity promoEntity = getJdbcOperations().queryForObject(selectRequest,
                 params, new BeanPropertyRowMapper<>(PromoEntity.class));

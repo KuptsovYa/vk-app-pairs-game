@@ -47,9 +47,8 @@ public class UserReposImpl implements UserRepos {
 
     @Override
     public void updateUserData(UserDto userDto) {
-        Object[] params = new Object[]{userDto.getCoins(),
-                userDto.getUserId()};
-        String updateRequest = "Update users set coins = ?, gameCount = gameCount - 1 where user = ?;";
+        Object[] params = new Object[]{userDto.getCoins(), userDto.getGameCount(), userDto.getUserId()};
+        String updateRequest = "Update users set coins = ?, gameCount = gameCount - ? where user = ?;";
         getJdbcOperations().update(updateRequest, params);
     }
 
