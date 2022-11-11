@@ -4,19 +4,23 @@ import com.kalbim.vkapppairsgame.dto.*;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
 import com.kalbim.vkapppairsgame.vk.VkApiClass;
+import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import com.vk.api.sdk.objects.users.responses.GetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepos userRepos;
+    private final VkApiClass vkApiClient = new VkApiClass();
 
     @Autowired
     public UserServiceImpl(UserRepos userRepos) {
@@ -25,6 +29,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDto getAllDataOfUser(String userId) {
         UsersEntity usersEntity = userRepos.getAllUserData(userId);
+        VkApiClass vkApiClient = new VkApiClass();
         return userDtoAllFieldsBuilder(usersEntity);
     }
 
@@ -37,28 +42,47 @@ public class UserServiceImpl implements UserService {
         return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
     }
 
-    public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
+    public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
         List<UsersEntity> entityList = userRepos.getTopPlayers(topPlayersBordersDto);
-        return convertFromEntityToDto(entityList);
+        List<GetResponse> responseList = vkApiClient.getUsers(entityList
+                .stream()
+                .map(e -> String.valueOf(e.getUser()))
+                .collect(Collectors.toList()));
+        return convertFromEntityToDto(responseList, entityList);
     }
 
-    public TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
+    public TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
         List<UsersEntity> entityList = userRepos.getTopPlayersFromFriends(topPlayersBordersDto);
-        return convertFromEntityToDto(entityList);
+        List<GetResponse> responseList = vkApiClient.getUsers(entityList
+                .stream()
+                .map(e -> String.valueOf(e.getUser()))
+                .collect(Collectors.toList()));
+
+        return convertFromEntityToDto(responseList, entityList);
     }
 
-    private TopPlayersDto convertFromEntityToDto(List<UsersEntity> list) {
-        List<UserDto> dtoList = list.stream()
-                .map(entity ->
-                        UserDto.builder()
-                                .coins(String.valueOf(entity.getCoins()))
-                                .gameCount(String.valueOf(entity.getGameCount()))
-                                .userId(String.valueOf(entity.getUser()))
-                                .build()
-                ).collect(Collectors.toList());
-        return TopPlayersDto.builder().users(dtoList).build();
-    }
+    private TopPlayersDto convertFromEntityToDto(List<GetResponse> list, List<UsersEntity> entityList) {
+        List<PlayerInLeaderBoard> playerInLeaderBoardList = list.stream().map(e ->
+                PlayerInLeaderBoard.builder()
+                .firstName(e.getFirstNameNom())
+                .secondName(e.getLastNameNom())
+                .photo(e.getPhoto100().toString())
+                .id(e.getId())
+                .build()
+        ).collect(Collectors.toList());
 
+        playerInLeaderBoardList.forEach(
+                elem -> {
+                    Integer userId = elem.getId();
+                    Optional<UsersEntity> entity = entityList.stream().filter(dbEntity -> userId == dbEntity.getUser()).findFirst();
+                    if(entity.isPresent()) {
+                        UsersEntity resEntity = entity.get();
+                        elem.setCoins(resEntity.getCoins());
+                    }
+                }
+        );
+        return TopPlayersDto.builder().users(playerInLeaderBoardList).build();
+    }
 
     public void sendNotifications() throws ClientException, ApiException {
         VkApiClass vkApiClass = new VkApiClass();
