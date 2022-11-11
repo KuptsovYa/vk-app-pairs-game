@@ -8,8 +8,8 @@ public interface UserService {
 
     UserDto getAllDataOfUser(String userId);
     UserDto updateUserData(UserDto userDto);
-    TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto);
-    TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto);
+    TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException;
+    TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException;
     void updateGameCount();
     void sendNotifications() throws ClientException, ApiException;
     void updateNotificationStatus(UserDto userDto);

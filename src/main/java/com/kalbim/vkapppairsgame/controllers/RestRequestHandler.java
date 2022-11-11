@@ -5,6 +5,8 @@ import com.kalbim.vkapppairsgame.dto.*;
 import com.kalbim.vkapppairsgame.service.PromoService;
 import com.kalbim.vkapppairsgame.service.TimeService;
 import com.kalbim.vkapppairsgame.service.UserService;
+import com.vk.api.sdk.exceptions.ApiException;
+import com.vk.api.sdk.exceptions.ClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,13 +46,13 @@ public class RestRequestHandler {
 
     @PostMapping("v1/api/getTopPlayers")
     @Transactional
-    public TopPlayersDto getTopPlayers(@RequestBody TopPlayersBordersDto topPlayersBordersDto) {
+    public TopPlayersDto getTopPlayers(@RequestBody TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
         return userService.getTopPlayers(topPlayersBordersDto);
     }
 
     @PostMapping("v1/api/getTopPlayersFriends")
     @Transactional
-    public TopPlayersDto getTopPlayersFromFriends(@RequestBody TopPlayersBordersDto topPlayersBordersDto) {
+    public TopPlayersDto getTopPlayersFromFriends(@RequestBody TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
         return userService.getTopPlayersFromFriends(topPlayersBordersDto);
     }
 

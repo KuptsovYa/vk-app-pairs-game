@@ -12,5 +12,6 @@ import java.util.List;
 public class TopPlayersDto {
 
     @JsonProperty("users")
-    private List<UserDto> users;
+    private List<PlayerInLeaderBoard> users;
+
 }
