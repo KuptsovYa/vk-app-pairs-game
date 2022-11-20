@@ -1,6 +1,14 @@
 package com.kalbim.vkapppairsgame.vk;
 
-import com.kalbim.vkapppairsgame.entity.UsersEntity;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.ServiceActor;
@@ -16,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.vk.api.sdk.client.Lang.RU;
 import static com.vk.api.sdk.objects.users.Fields.*;
@@ -24,19 +33,72 @@ import static com.vk.api.sdk.objects.users.Fields.*;
 @Slf4j
 public class VkApiClass {
 
-//    @Value("${vk.app.id}")
-//    private String applicationId = "51435598";
-//    @Value("${vk.client.secret}")
-//    private String clientSecret = "IB11omfMOf56wHKhyGAQ";
-//    @Value("${vk.service.access.key}")
-//    private String serviceAccessKey = "09d5529d09d5529d09d5529d290ac58ad3009d509d5529d6ae745e0e28a3a043a19ea84";
-
     @Value("${vk.app.id}")
-    private String applicationId = "51430029";
+    private String applicationId;
     @Value("${vk.client.secret}")
-    private String clientSecret = "wL2P2I3sG4rpIqkpn5P2";
+    private String clientSecret;
     @Value("${vk.service.access.key}")
-    private String serviceAccessKey = "53e0cc7a53e0cc7a53e0cc7ad250f00ef7553e053e0cc7a30c8967c8bd2b08c13099d0c";
+    private String serviceAccessKey;
+
+    private static final String ENCODING = "UTF-8";
+
+    public boolean checkKey(String url) throws Exception {
+        String urlRes = "https://example.com/?" + url;
+        String clientSecret = this.getClientSecret();
+
+        Map<String, String> queryParams = getQueryParams(new URL(urlRes));
+
+        String checkString = queryParams.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("vk_"))
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> encode(entry.getKey()) + "=" + encode(entry.getValue()))
+                .collect(Collectors.joining("&"));
+
+        String sign = getHashCode(checkString, clientSecret);
+        return sign.equals(queryParams.getOrDefault("sign", ""));
+    }
+
+    private static Map<String, String> getQueryParams(URL url) {
+        final Map<String, String> result = new LinkedHashMap<>();
+        final String[] pairs = url.getQuery().split("&");
+
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            String key = idx > 0 ? decode(pair.substring(0, idx)) : pair;
+            String value = idx > 0 && pair.length() > idx + 1 ? decode(pair.substring(idx + 1)) : null;
+            result.put(key, value);
+        }
+
+        return result;
+    }
+
+    private static String getHashCode(String data, String key) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(ENCODING), "HmacSHA256");
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(secretKey);
+        byte[] hmacData = mac.doFinal(data.getBytes(ENCODING));
+        return new String(Base64.getUrlEncoder().withoutPadding().encode(hmacData));
+    }
+
+    private static String decode(String value) {
+        try {
+            return URLDecoder.decode(value, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return value;
+    }
+
+    private static String encode(String value) {
+        try {
+            return URLEncoder.encode(value, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return value;
+    }
 
     public void sendNotification(List<Integer> users) throws ClientException, ApiException {
         VkApiClient vkApiClient = getApiClient();

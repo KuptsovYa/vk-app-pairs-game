@@ -21,4 +21,6 @@ public class UserPlaceInLeadBoardDto {
     private String totalUsersCount;
     @JsonProperty("friendsList")
     private List<String> friendsList;
+    @JsonProperty("vkToken")
+    private String vkToken;
 }

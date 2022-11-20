@@ -14,4 +14,6 @@ public class TopPlayersDto {
     @JsonProperty("users")
     private List<PlayerInLeaderBoard> users;
 
+    @JsonProperty("vkToken")
+    private String vkToken;
 }

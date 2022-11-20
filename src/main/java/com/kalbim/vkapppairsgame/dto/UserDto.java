@@ -20,4 +20,6 @@ public class UserDto {
     private String notifications;
     @JsonProperty("circumstances")
     private String circs;
+    @JsonProperty("vkToken")
+    private String vkToken;
 }

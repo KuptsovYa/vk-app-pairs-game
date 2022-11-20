@@ -14,4 +14,6 @@ public class PlayerCoinsDto {
     private String userId;
     @JsonProperty("coins")
     private String coins;
+    @JsonProperty("vkToken")
+    private String vkToken;
 }

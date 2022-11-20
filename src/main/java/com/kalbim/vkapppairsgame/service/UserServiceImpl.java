@@ -20,23 +20,23 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepos userRepos;
-    private final VkApiClass vkApiClient = new VkApiClass();
+    private final VkApiClass vkApiClass;
 
     @Autowired
-    public UserServiceImpl(UserRepos userRepos) {
+    public UserServiceImpl(UserRepos userRepos, VkApiClass vkApiClass) {
         this.userRepos = userRepos;
+        this.vkApiClass = vkApiClass;
     }
 
     public UserDto getAllDataOfUser(String userId) {
         UsersEntity usersEntity = userRepos.getAllUserData(userId);
-        VkApiClass vkApiClient = new VkApiClass();
         return userDtoAllFieldsBuilder(usersEntity);
     }
 
     public UserDto updateUserData(UserDto userDto) {
         UsersEntity usersEntity = userRepos.getAllUserData(userDto.getUserId());
         if (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) {
-            userDto.setCoins(userDto.getCoins() + 10);
+            userDto.setCoins(String.valueOf(usersEntity.getCoins() + 10));
         }
         userRepos.updateUserData(userDto);
         return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
         List<UsersEntity> entityList = userRepos.getTopPlayers(topPlayersBordersDto);
-        List<GetResponse> responseList = vkApiClient.getUsers(entityList
+        List<GetResponse> responseList = vkApiClass.getUsers(entityList
                 .stream()
                 .map(e -> String.valueOf(e.getUser()))
                 .collect(Collectors.toList()));
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     public TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
         List<UsersEntity> entityList = userRepos.getTopPlayersFromFriends(topPlayersBordersDto);
-        List<GetResponse> responseList = vkApiClient.getUsers(entityList
+        List<GetResponse> responseList = vkApiClass.getUsers(entityList
                 .stream()
                 .map(e -> String.valueOf(e.getUser()))
                 .collect(Collectors.toList()));
