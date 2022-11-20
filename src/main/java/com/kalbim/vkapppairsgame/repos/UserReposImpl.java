@@ -41,6 +41,7 @@ public class UserReposImpl implements UserRepos {
             getJdbcOperations().update(request, paramsToInsert);
             usersEntity = new UsersEntity();
             usersEntity.setUser(Integer.parseInt(userId));
+            usersEntity.setGameCount(2);
         }
         return usersEntity;
     }

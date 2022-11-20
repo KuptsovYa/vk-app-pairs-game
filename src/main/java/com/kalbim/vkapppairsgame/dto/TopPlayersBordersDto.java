@@ -20,4 +20,7 @@ public class TopPlayersBordersDto {
 
     @JsonProperty("friendsList")
     private List<String> friendsList;
+
+    @JsonProperty("vkToken")
+    private String vkToken;
 }

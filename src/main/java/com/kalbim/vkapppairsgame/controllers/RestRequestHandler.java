@@ -5,25 +5,29 @@ import com.kalbim.vkapppairsgame.dto.*;
 import com.kalbim.vkapppairsgame.service.PromoService;
 import com.kalbim.vkapppairsgame.service.TimeService;
 import com.kalbim.vkapppairsgame.service.UserService;
+import com.kalbim.vkapppairsgame.vk.VkApiClass;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://prod-app51435598-0c8c80eb5f9c.pages-ac.vk-apps.com/")
 public class RestRequestHandler {
 
     private final UserService userService;
     private final PromoService promoService;
     private final TimeService timeService;
+    private final VkApiClass vkApiClass;
 
     @Autowired
-    public RestRequestHandler(UserService userService, PromoService promoService, TimeService timeService) {
+    public RestRequestHandler(UserService userService, PromoService promoService, TimeService timeService, VkApiClass vkApiClass) {
         this.userService = userService;
         this.promoService = promoService;
         this.timeService = timeService;
+        this.vkApiClass = vkApiClass;
     }
 
     @GetMapping("v1/api/getUserData/{vkUserId}")
@@ -35,30 +39,55 @@ public class RestRequestHandler {
     @PostMapping("v1/api/getPromo/")
     @Transactional
     public PromoDto getPromoByCoins(@RequestBody PlayerCoinsDto playerCoinsDto) {
+        try {
+            vkApiClass.checkKey(playerCoinsDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return promoService.returnPromo(playerCoinsDto);
     }
 
     @PostMapping("v1/api/up")
     @Transactional
     public UserDto updateUserData(@RequestBody UserDto userDto) {
+        try {
+            vkApiClass.checkKey(userDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return userService.updateUserData(userDto);
     }
 
     @PostMapping("v1/api/getTopPlayers")
     @Transactional
     public TopPlayersDto getTopPlayers(@RequestBody TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
+        try {
+            vkApiClass.checkKey(topPlayersBordersDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return userService.getTopPlayers(topPlayersBordersDto);
     }
 
     @PostMapping("v1/api/getTopPlayersFriends")
     @Transactional
     public TopPlayersDto getTopPlayersFromFriends(@RequestBody TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
+        try {
+            vkApiClass.checkKey(topPlayersBordersDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return userService.getTopPlayersFromFriends(topPlayersBordersDto);
     }
 
     @PostMapping("v1/api/updateNotificationStatus")
     @Transactional
     public UserDto updateNotificationStatus(@RequestBody UserDto userDto) {
+        try {
+            vkApiClass.checkKey(userDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         userService.updateNotificationStatus(userDto);
         return userDto;
     }
@@ -66,6 +95,11 @@ public class RestRequestHandler {
     @PostMapping("v1/api/updateCirc")
     @Transactional
     public UserDto updateCircumstances(@RequestBody SingleCircumstanceUpdateDto scuDto) {
+        try {
+            vkApiClass.checkKey(scuDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return userService.updateCircumstances(scuDto);
     }
 
@@ -76,11 +110,21 @@ public class RestRequestHandler {
 
     @PostMapping("/v1/api/getPlaceInTop")
     public UserPlaceInLeadBoardDto getUserPlaceInLeaderBoard(@RequestBody UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        try {
+            vkApiClass.checkKey(userPlaceInLeadBoardDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return userService.getUserPlaceInLeaderBoard(userPlaceInLeadBoardDto);
     }
 
     @PostMapping("/v1/api/getPlaceInTopFriends")
     public UserPlaceInLeadBoardDto getUserPlaceInFriendsLeaderBoard(@RequestBody UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
+        try {
+            vkApiClass.checkKey(userPlaceInLeadBoardDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
         return userService.getUserPlaceInFriendsLeaderBoard(userPlaceInLeadBoardDto);
     }
 }

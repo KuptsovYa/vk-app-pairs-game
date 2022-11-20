@@ -14,4 +14,6 @@ public class SingleCircumstanceUpdateDto {
     private String userId;
     @JsonProperty("circumstance")
     private String circumstance;
+    @JsonProperty("vkToken")
+    private String vkToken;
 }
