@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         } else {
             userDto.setGameCount("1");
         }
-        userRepos.updateUserData(userDto);
+        userRepos.updateUserData(userDto, (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) ? "10" : userDto.getCoins());
         return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
     }
 

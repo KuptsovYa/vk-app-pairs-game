@@ -13,7 +13,7 @@ import java.util.Map;
 public interface UserRepos {
 
     UsersEntity getAllUserData(String userId);
-    void updateUserData(UserDto userDto);
+    void updateUserData(UserDto userDto, String diffForLeadBoard);
     List<LeaderBoardEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto);
     List<LeaderBoardEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto);
     void updateGamesCount();
