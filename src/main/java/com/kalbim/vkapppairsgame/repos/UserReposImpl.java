@@ -4,6 +4,7 @@ import com.kalbim.vkapppairsgame.dto.SingleCircumstanceUpdateDto;
 import com.kalbim.vkapppairsgame.dto.TopPlayersBordersDto;
 import com.kalbim.vkapppairsgame.dto.UserDto;
 import com.kalbim.vkapppairsgame.dto.UserPlaceInLeadBoardDto;
+import com.kalbim.vkapppairsgame.entity.LeaderBoardEntity;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,21 +62,18 @@ public class UserReposImpl implements UserRepos {
         getJdbcOperations().update(updateRequest, params);
     }
 
-    public List<UsersEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
+    public List<LeaderBoardEntity> getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) {
         Object[] params = new Object[]{topPlayersBordersDto.getLeft(),
                 topPlayersBordersDto.getRight()};
-        String selectRequest = "Select user, coins, gameCount, notifications, circs from users order by coins desc limit ?,?;";
+        String selectRequest = "Select userId, coins from leaderBoard order by coins desc limit ?,?;";
         return getJdbcOperations().query(selectRequest, params,
-                (rs, rowNum) -> new UsersEntity(
-                        Integer.parseInt(rs.getString("user")),
-                        Integer.parseInt(rs.getString("coins")),
-                        Integer.parseInt(rs.getString("gameCount")),
-                        Integer.parseInt(rs.getString("notifications")),
-                        rs.getString("circs")
+                (rs, rowNum) -> new LeaderBoardEntity(
+                        Integer.parseInt(rs.getString("userId")),
+                        Integer.parseInt(rs.getString("coins"))
                 ));
     }
 
-    public List<UsersEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
+    public List<LeaderBoardEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
         String selectFirstPart = "Select userId, coins from leaderBoard where userId in (";
         String selectSecondPart = ") order by coins desc limit ?,?;";
 
@@ -84,12 +82,9 @@ public class UserReposImpl implements UserRepos {
         Object[] params = new Object[]{topPlayersBordersDto.getLeft(), topPlayersBordersDto.getRight()};
 
         return getJdbcOperations().query(selectFirstPart + resultList + selectSecondPart, params,
-                (rs, rowNum) -> new UsersEntity(
-                        Integer.parseInt(rs.getString("user")),
-                        Integer.parseInt(rs.getString("coins")),
-                        Integer.parseInt(rs.getString("gameCount")),
-                        Integer.parseInt(rs.getString("notifications")),
-                        rs.getString("circs")
+                (rs, rowNum) -> new LeaderBoardEntity(
+                        Integer.parseInt(rs.getString("userId")),
+                        Integer.parseInt(rs.getString("coins"))
                 ));
     }
 
