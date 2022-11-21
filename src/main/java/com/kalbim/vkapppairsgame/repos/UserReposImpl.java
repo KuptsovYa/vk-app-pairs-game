@@ -53,13 +53,14 @@ public class UserReposImpl implements UserRepos {
     }
 
     @Override
-    public void updateUserData(UserDto userDto) {
+    public void updateUserData(UserDto userDto, String diffForLeadBoard) {
         Object[] params = new Object[]{userDto.getCoins(),
                 userDto.getUserId()};
         String updateRequest = "Update users set coins = ?, gameCount = gameCount - 1 where user = ?;";
         getJdbcOperations().update(updateRequest, params);
 
-        updateRequest = "update leaderBoard set coins = ? where userId = ?";
+        params = new Object[]{diffForLeadBoard, userDto.getUserId()};
+        updateRequest = "update leaderBoard set coins = coins + ? where userId = ?";
         getJdbcOperations().update(updateRequest, params);
     }
 
