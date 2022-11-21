@@ -1,6 +1,7 @@
 package com.kalbim.vkapppairsgame.service;
 
 import com.kalbim.vkapppairsgame.dto.*;
+import com.kalbim.vkapppairsgame.entity.LeaderBoardEntity;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
 import com.kalbim.vkapppairsgame.vk.VkApiClass;
@@ -43,25 +44,25 @@ public class UserServiceImpl implements UserService {
     }
 
     public TopPlayersDto getTopPlayers(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
-        List<UsersEntity> entityList = userRepos.getTopPlayers(topPlayersBordersDto);
+        List<LeaderBoardEntity> entityList = userRepos.getTopPlayers(topPlayersBordersDto);
         List<GetResponse> responseList = vkApiClass.getUsers(entityList
                 .stream()
-                .map(e -> String.valueOf(e.getUser()))
+                .map(e -> String.valueOf(e.getUserId()))
                 .collect(Collectors.toList()));
         return convertFromEntityToDto(responseList, entityList);
     }
 
     public TopPlayersDto getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) throws ClientException, ApiException {
-        List<UsersEntity> entityList = userRepos.getTopPlayersFromFriends(topPlayersBordersDto);
+        List<LeaderBoardEntity> entityList = userRepos.getTopPlayersFromFriends(topPlayersBordersDto);
         List<GetResponse> responseList = vkApiClass.getUsers(entityList
                 .stream()
-                .map(e -> String.valueOf(e.getUser()))
+                .map(e -> String.valueOf(e.getUserId()))
                 .collect(Collectors.toList()));
 
         return convertFromEntityToDto(responseList, entityList);
     }
 
-    private TopPlayersDto convertFromEntityToDto(List<GetResponse> list, List<UsersEntity> entityList) {
+    private TopPlayersDto convertFromEntityToDto(List<GetResponse> list, List<LeaderBoardEntity> entityList) {
         List<PlayerInLeaderBoard> playerInLeaderBoardList = list.stream().map(e ->
                 PlayerInLeaderBoard.builder()
                 .firstName(e.getFirstNameNom())
@@ -74,9 +75,9 @@ public class UserServiceImpl implements UserService {
         playerInLeaderBoardList.forEach(
                 elem -> {
                     Integer userId = elem.getId();
-                    Optional<UsersEntity> entity = entityList.stream().filter(dbEntity -> userId == dbEntity.getUser()).findFirst();
+                    Optional<LeaderBoardEntity> entity = entityList.stream().filter(dbEntity -> userId == dbEntity.getUserId()).findFirst();
                     if(entity.isPresent()) {
-                        UsersEntity resEntity = entity.get();
+                        LeaderBoardEntity resEntity = entity.get();
                         elem.setCoins(resEntity.getCoins());
                     }
                 }
