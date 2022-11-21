@@ -39,6 +39,11 @@ public class UserReposImpl implements UserRepos {
             String request = "insert into users(user, coins, gameCount, notifications, circs) values(?, ?, ?, ?, ?);";
             Object[] paramsToInsert = new Object[]{userId, 0, 2, 0, "00000"};
             getJdbcOperations().update(request, paramsToInsert);
+
+            request = "insert into leaderBoard(userId, coins) values(?, ?);";
+            paramsToInsert = new Object[]{userId, 0};
+            getJdbcOperations().update(request, paramsToInsert);
+
             usersEntity = new UsersEntity();
             usersEntity.setUser(Integer.parseInt(userId));
             usersEntity.setGameCount(2);
@@ -50,6 +55,9 @@ public class UserReposImpl implements UserRepos {
     public void updateUserData(UserDto userDto) {
         Object[] params = new Object[]{userDto.getCoins(), userDto.getGameCount(), userDto.getUserId()};
         String updateRequest = "Update users set coins = ?, gameCount = gameCount - ? where user = ?;";
+        getJdbcOperations().update(updateRequest, params);
+
+        updateRequest = "update leaderBoard set coins = ? where userId = ?";
         getJdbcOperations().update(updateRequest, params);
     }
 
@@ -68,7 +76,7 @@ public class UserReposImpl implements UserRepos {
     }
 
     public List<UsersEntity> getTopPlayersFromFriends(TopPlayersBordersDto topPlayersBordersDto) {
-        String selectFirstPart = "Select user, coins, gameCount, notifications, circs from users where user in (";
+        String selectFirstPart = "Select userId, coins from leaderBoard where userId in (";
         String selectSecondPart = ") order by coins desc limit ?,?;";
 
         String resultList = topPlayersBordersDto.getFriendsList().stream().collect(Collectors.joining(","));
@@ -119,29 +127,29 @@ public class UserReposImpl implements UserRepos {
     //
 
     public List<Map<String, Object>> getUserPlaceInTotalLeaderboard(UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
-        String selectQuery = "select * from (select user, " +
-                "(@row_number:=@row_number + 1) as number from users, (SELECT @row_number:=0) as temp order by coins desc)" +
-                " as result where result.user = ?";
+        String selectQuery = "select * from (select userId, " +
+                "(@row_number:=@row_number + 1) as number from leaderBoard, (SELECT @row_number:=0) as temp order by coins desc)" +
+                " as result where result.userId = ?";
         Object[] params = new Object[]{userPlaceInLeadBoardDto.getUserId()};
         return getJdbcOperations().queryForList(selectQuery, params);
     }
 
     public List<Map<String, Object>> getUserPlaceInFriendsLeaderboard(UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
-        String selectQuery = "select * from (select user, (@row_number:=@row_number + 1) as number " +
-                "from users, (SELECT @row_number:=0) as temp where user in (";
+        String selectQuery = "select * from (select userId, (@row_number:=@row_number + 1) as number " +
+                "from leaderBoard, (SELECT @row_number:=0) as temp where userId in (";
         String friendsList = userPlaceInLeadBoardDto.getFriendsList().stream().collect(Collectors.joining(","));
         Object[] params = new Object[]{userPlaceInLeadBoardDto.getUserId()};
-        return getJdbcOperations().queryForList(selectQuery + friendsList + ") order by coins desc) as result where result.user = ?", params);
+        return getJdbcOperations().queryForList(selectQuery + friendsList + ") order by coins desc) as result where result.userId = ?", params);
     }
 
     public Integer getTotalPlayers(List<String> friendsList) {
-        String select = "select count(*) from users where user in (";
+        String select = "select count(*) from leaderBoard where userId in (";
         String resultList = friendsList.stream().collect(Collectors.joining(","));
         return getJdbcOperations().queryForObject(select + resultList + ");", Integer.class);
     }
 
     public Integer getTotalPlayers() {
-        String select = "select count(*) from users";
+        String select = "select count(*) from leaderBoard";
         return getJdbcOperations().queryForObject(select, Integer.class);
     }
 

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "https://prod-app51435598-0c8c80eb5f9c.pages-ac.vk-apps.com/")
+@CrossOrigin(origins = "*")
 public class RestRequestHandler {
 
     private final UserService userService;
