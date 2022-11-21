@@ -39,7 +39,8 @@ public class UserServiceImpl implements UserService {
         if (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) {
             userDto.setCoins(String.valueOf(usersEntity.getCoins() + 10));
         }
-        userRepos.updateUserData(userDto, (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) ? "10" : userDto.getCoins());
+        userRepos.updateUserData(userDto, (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) ? "10"
+                : String.valueOf(Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins()));
         return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
     }
 
