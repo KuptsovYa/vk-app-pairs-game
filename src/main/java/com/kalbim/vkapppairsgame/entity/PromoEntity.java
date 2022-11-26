@@ -1,9 +1,14 @@
 package com.kalbim.vkapppairsgame.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "promo", schema = "promodb", catalog = "")
 public class PromoEntity {
     private int idpromo;

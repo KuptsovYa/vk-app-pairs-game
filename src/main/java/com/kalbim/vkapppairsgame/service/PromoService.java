@@ -2,12 +2,16 @@ package com.kalbim.vkapppairsgame.service;
 
 import com.kalbim.vkapppairsgame.dto.PromoDto;
 import com.kalbim.vkapppairsgame.dto.PlayerCoinsDto;
+import com.kalbim.vkapppairsgame.dto.UserPromoDto;
 import com.kalbim.vkapppairsgame.entity.PromoEntity;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.PromoRepos;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PromoService implements PromoServiceImpl{
@@ -29,5 +33,17 @@ public class PromoService implements PromoServiceImpl{
             return PromoDto.builder().promo(pe.getPromo()).build();
         }
         return PromoDto.builder().promo("").build();
+    }
+
+    public UserPromoDto getUsersPromoList(UserPromoDto userPromoDto) {
+        List<PromoEntity> promoEntityList = promoRepos.getUsersPromoList(userPromoDto);
+        List<PromoDto> promoDtos = promoEntityList.stream().map(promoEntity -> PromoDto.builder()
+                .promo(promoEntity.getPromo())
+                .price(String.valueOf(promoEntity.getPrice()))
+                .build())
+                .collect(Collectors.toList());
+        userPromoDto.setPromoList(promoDtos);
+        userPromoDto.setVkToken(null);
+        return userPromoDto;
     }
 }

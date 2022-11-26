@@ -127,4 +127,14 @@ public class RestRequestHandler {
         }
         return userService.getUserPlaceInFriendsLeaderBoard(userPlaceInLeadBoardDto);
     }
+
+    @PostMapping("/v1/api/getUserPromoCodes")
+    public UserPromoDto getPromoCodesByUser(@RequestBody UserPromoDto userPromoDto) {
+        try {
+            vkApiClass.checkKey(userPromoDto.getVkToken());
+        } catch (Exception e) {
+            throw new InvalidDataAccessApiUsageException(e.getMessage());
+        }
+        return promoService.getUsersPromoList(userPromoDto);
+    }
 }
