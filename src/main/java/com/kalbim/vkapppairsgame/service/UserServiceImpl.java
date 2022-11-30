@@ -92,8 +92,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public void sendNotifications() throws ClientException, ApiException {
-        VkApiClass vkApiClass = new VkApiClass();
-
         List<UsersEntity> usersEntities = userRepos.getAllPlayersWithNotifications();
         Integer[] idsArray = usersEntities.stream().map(UsersEntity::getUser).toArray(Integer[]::new);
         List<Integer> idsList = new ArrayList<>();
