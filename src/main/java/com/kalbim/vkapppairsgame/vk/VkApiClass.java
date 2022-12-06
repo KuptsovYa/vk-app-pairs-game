@@ -43,7 +43,7 @@ public class VkApiClass {
 
     private static final String ENCODING = "UTF-8";
 
-    public String checkKey(String url) throws Exception {
+    public String checkForCorrectUserByKey(String url) throws Exception {
         String urlRes = "https://example.com/?" + url.split("#")[0];
 
         String clientSecret = this.getClientSecret();

@@ -5,14 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PromoDto {
-    @JsonProperty("promo")
-    private String promo;
+public class UserPromoDto {
 
-    @JsonProperty("price")
-    private String price;
+    @JsonProperty("userId")
+    private String userId;
+
+    @JsonProperty("promoList")
+    private List<PromoDto> promoList;
+
+    @JsonProperty("vkToken")
+    private String vkToken;
 }
