@@ -136,7 +136,7 @@ public class RestRequestHandler {
     @PostMapping("/v1/api/getUserPromoCodes")
     public UserPromoDto getPromoCodesByUser(@RequestBody UserPromoDto userPromoDto) {
         try {
-            vkApiClass.checkForCorrectUserByKey(userPromoDto.getVkToken());
+            userPromoDto.setUserId(vkApiClass.checkForCorrectUserByKey(userPromoDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }

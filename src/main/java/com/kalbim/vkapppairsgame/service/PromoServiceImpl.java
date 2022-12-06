@@ -19,7 +19,6 @@ public class PromoServiceImpl implements PromoService{
 
     private final PromoRepos promoRepos;
     private final UserRepos userRepos;
-import com.kalbim.vkapppairsgame.dto.UserPromoDto;
 
     @Autowired
     public PromoServiceImpl(PromoRepos promoRepos, UserRepos userRepos) {
@@ -40,6 +39,7 @@ import com.kalbim.vkapppairsgame.dto.UserPromoDto;
         throw new InvalidDataAccessApiUsageException("Incorrect coins value");
     }
 
+    @Override
     public UserPromoDto getUsersPromoList(UserPromoDto userPromoDto) {
         List<PromoEntity> promoEntityList = promoRepos.getUsersPromoList(userPromoDto);
         List<PromoDto> promoDtos = promoEntityList.stream().map(promoEntity -> PromoDto.builder()
@@ -51,7 +51,5 @@ import com.kalbim.vkapppairsgame.dto.UserPromoDto;
         userPromoDto.setVkToken(null);
         return userPromoDto;
     }
-    PromoDto returnPromo(PlayerCoinsDto playerCoinsDto);
 
-    UserPromoDto getUsersPromoList(UserPromoDto userPromoDto);
 }
