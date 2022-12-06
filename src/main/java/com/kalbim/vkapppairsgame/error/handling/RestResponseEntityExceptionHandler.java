@@ -12,17 +12,17 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler {
 
-    @ExceptionHandler( value = EmptyResultDataAccessException.class)
-    protected ResponseEntity<String> handleConflict(
-            RuntimeException ex, WebRequest request) {
-        String bodyOfResponse = "Empty result, 0 players found";
-        return new ResponseEntity<String>(bodyOfResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler( value = InvalidDataAccessApiUsageException.class)
-    protected ResponseEntity<String> handleInvalidDataAccessApiUsageException(
-            RuntimeException ex, WebRequest request) {
-        String bodyOfResponse = "Vk key validation failed";
-        return new ResponseEntity<String>(bodyOfResponse, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler( value = EmptyResultDataAccessException.class)
+//    protected ResponseEntity<String> handleConflict(
+//            RuntimeException ex, WebRequest request) {
+//        String bodyOfResponse = "Empty result, 0 players found";
+//        return new ResponseEntity<String>(bodyOfResponse, HttpStatus.BAD_REQUEST);
+//    }
+//
+//    @ExceptionHandler( value = InvalidDataAccessApiUsageException.class)
+//    protected ResponseEntity<String> handleInvalidDataAccessApiUsageException(
+//            RuntimeException ex, WebRequest request) {
+//        String bodyOfResponse = "Vk key validation failed";
+//        return new ResponseEntity<String>(bodyOfResponse, HttpStatus.BAD_REQUEST);
+//    }
 }

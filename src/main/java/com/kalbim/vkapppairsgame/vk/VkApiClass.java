@@ -19,7 +19,8 @@ import com.vk.api.sdk.objects.ServiceClientCredentialsFlowResponse;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
 import com.vk.api.sdk.queries.secure.SecureSendNotificationQuery;
 import com.vk.api.sdk.queries.users.UsersGetQuery;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +31,9 @@ import static com.vk.api.sdk.client.Lang.RU;
 import static com.vk.api.sdk.objects.users.Fields.*;
 
 @Service
-@Slf4j
 public class VkApiClass {
 
+    private static Logger log = LoggerFactory.getLogger(VkApiClass.class);
     @Value("${vk.app.id}")
     private String applicationId;
     @Value("${vk.client.secret}")
@@ -42,20 +43,25 @@ public class VkApiClass {
 
     private static final String ENCODING = "UTF-8";
 
-    public boolean checkKey(String url) throws Exception {
-        String urlRes = "https://example.com/?" + url;
-        String clientSecret = this.getClientSecret();
+    public String checkKey(String url) throws Exception {
+        String urlRes = "https://example.com/?" + url.split("#")[0];
 
+        String clientSecret = this.getClientSecret();
         Map<String, String> queryParams = getQueryParams(new URL(urlRes));
 
         String checkString = queryParams.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("vk_"))
-                .sorted(Map.Entry.comparingByKey())
-                .map(entry -> encode(entry.getKey()) + "=" + encode(entry.getValue()))
-                .collect(Collectors.joining("&"));
-
+            .filter(entry -> entry.getKey().startsWith("vk_"))
+            .sorted(Map.Entry.comparingByKey())
+            .map(entry -> encode(entry.getKey()) + "=" + encode(entry.getValue()))
+            .collect(Collectors.joining("&"));
         String sign = getHashCode(checkString, clientSecret);
-        return sign.equals(queryParams.getOrDefault("sign", ""));
+
+        boolean isSignEquals = sign.equals(queryParams.getOrDefault("sign", ""));
+        if (isSignEquals) {
+            return queryParams.get("vk_user_id");
+        } else {
+            throw new RuntimeException();
+        }
     }
 
     private static Map<String, String> getQueryParams(URL url) {
@@ -66,6 +72,8 @@ public class VkApiClass {
             int idx = pair.indexOf("=");
             String key = idx > 0 ? decode(pair.substring(0, idx)) : pair;
             String value = idx > 0 && pair.length() > idx + 1 ? decode(pair.substring(idx + 1)) : null;
+            log.info("key - " + key + " value - " + value);
+            if (key == null || value == null) continue;
             result.put(key, value);
         }
 
