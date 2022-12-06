@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class PromoService implements PromoServiceImpl{
+public class PromoServiceImpl implements PromoService{
 
     private final PromoRepos promoRepos;
     private final UserRepos userRepos;

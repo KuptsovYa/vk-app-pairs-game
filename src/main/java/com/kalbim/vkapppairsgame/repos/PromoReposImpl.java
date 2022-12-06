@@ -2,7 +2,6 @@ package com.kalbim.vkapppairsgame.repos;
 
 import com.kalbim.vkapppairsgame.dto.PlayerCoinsDto;
 import com.kalbim.vkapppairsgame.dto.UserPromoDto;
-import com.kalbim.vkapppairsgame.entity.LeaderBoardEntity;
 import com.kalbim.vkapppairsgame.entity.PromoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
