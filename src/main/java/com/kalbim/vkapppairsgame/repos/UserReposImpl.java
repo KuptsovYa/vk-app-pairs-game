@@ -38,7 +38,7 @@ public class UserReposImpl implements UserRepos {
                     params, new BeanPropertyRowMapper<>(UsersEntity.class));
         } catch (JDBCException | EmptyResultDataAccessException exception) {
             String request = "insert into users(user, coins, gameCount, notifications, circs) values(?, ?, ?, ?, ?);";
-            Object[] paramsToInsert = new Object[]{userId, 0, 2, 0, "00000"};
+            Object[] paramsToInsert = new Object[]{userId, 0, 2, 0, "000"};
             getJdbcOperations().update(request, paramsToInsert);
 
             request = "insert into leaderBoard(userId, coins) values(?, ?);";
@@ -54,9 +54,9 @@ public class UserReposImpl implements UserRepos {
 
     @Override
     public void updateUserData(UserDto userDto, String diffForLeadBoard) {
-        Object[] params = new Object[]{userDto.getCoins(),
+        Object[] params = new Object[]{userDto.getCoins(), userDto.getGameCount(),
                 userDto.getUserId()};
-        String updateRequest = "Update users set coins = ?, gameCount = gameCount - 1 where user = ?;";
+        String updateRequest = "Update users set coins = ?, gameCount = gameCount - ? where user = ?;";
         getJdbcOperations().update(updateRequest, params);
 
         params = new Object[]{diffForLeadBoard, userDto.getUserId()};

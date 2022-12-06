@@ -40,7 +40,7 @@ public class RestRequestHandler {
     @Transactional
     public PromoDto getPromoByCoins(@RequestBody PlayerCoinsDto playerCoinsDto) {
         try {
-            vkApiClass.checkKey(playerCoinsDto.getVkToken());
+            playerCoinsDto.setUserId(vkApiClass.checkKey(playerCoinsDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }
@@ -51,7 +51,7 @@ public class RestRequestHandler {
     @Transactional
     public UserDto updateUserData(@RequestBody UserDto userDto) {
         try {
-            vkApiClass.checkKey(userDto.getVkToken());
+            userDto.setUserId(vkApiClass.checkKey(userDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }
@@ -84,7 +84,7 @@ public class RestRequestHandler {
     @Transactional
     public UserDto updateNotificationStatus(@RequestBody UserDto userDto) {
         try {
-            vkApiClass.checkKey(userDto.getVkToken());
+            userDto.setUserId(vkApiClass.checkKey(userDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }
@@ -96,7 +96,7 @@ public class RestRequestHandler {
     @Transactional
     public UserDto updateCircumstances(@RequestBody SingleCircumstanceUpdateDto scuDto) {
         try {
-            vkApiClass.checkKey(scuDto.getVkToken());
+            scuDto.setUserId(vkApiClass.checkKey(scuDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }
@@ -111,7 +111,7 @@ public class RestRequestHandler {
     @PostMapping("/v1/api/getPlaceInTop")
     public UserPlaceInLeadBoardDto getUserPlaceInLeaderBoard(@RequestBody UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
         try {
-            vkApiClass.checkKey(userPlaceInLeadBoardDto.getVkToken());
+            userPlaceInLeadBoardDto.setUserId(vkApiClass.checkKey(userPlaceInLeadBoardDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }
@@ -121,7 +121,7 @@ public class RestRequestHandler {
     @PostMapping("/v1/api/getPlaceInTopFriends")
     public UserPlaceInLeadBoardDto getUserPlaceInFriendsLeaderBoard(@RequestBody UserPlaceInLeadBoardDto userPlaceInLeadBoardDto) {
         try {
-            vkApiClass.checkKey(userPlaceInLeadBoardDto.getVkToken());
+            userPlaceInLeadBoardDto.setUserId(vkApiClass.checkKey(userPlaceInLeadBoardDto.getVkToken()));
         } catch (Exception e) {
             throw new InvalidDataAccessApiUsageException(e.getMessage());
         }
