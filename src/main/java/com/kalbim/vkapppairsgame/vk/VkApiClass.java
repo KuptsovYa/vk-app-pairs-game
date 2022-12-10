@@ -71,9 +71,7 @@ public class VkApiClass {
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
             String key = idx > 0 ? decode(pair.substring(0, idx)) : pair;
-            String value = idx > 0 && pair.length() > idx + 1 ? decode(pair.substring(idx + 1)) : null;
-            log.info("key - " + key + " value - " + value);
-            if (key == null || value == null) continue;
+            String value = idx > 0 && pair.length() > idx + 1 ? decode(pair.substring(idx + 1)) : "";
             result.put(key, value);
         }
 

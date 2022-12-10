@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+//@CrossOrigin(origins = "https://prod-app51476270-b3221be3c072.pages-ac.vk-apps.com")
 @CrossOrigin(origins = "*")
 public class RestRequestHandler {
 
@@ -30,7 +31,7 @@ public class RestRequestHandler {
         this.vkApiClass = vkApiClass;
     }
 
-    @PostMapping("v1/api/getUserData/{vkUserId}")
+    @PostMapping("api/getUserData/{vkUserId}")
     @Transactional
     public UserDto getAllUserData(@PathVariable String vkUserId, @RequestBody UserDto userDto) {
         try {

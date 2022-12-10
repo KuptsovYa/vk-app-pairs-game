@@ -24,6 +24,8 @@ public class UserServiceImpl implements UserService {
 
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private static final Integer CIRCS_COUNT = 3;
+    private static final Character CIRC_IS_USED = '1';
+    private static final Character CIRC_IS_NOT_USED = '0';
 
     private final UserRepos userRepos;
     private final VkApiClass vkApiClass;
@@ -41,20 +43,27 @@ public class UserServiceImpl implements UserService {
 
     public UserDto updateUserData(UserDto userDto) {
         UsersEntity usersEntity = userRepos.getAllUserData(userDto.getUserId());
-
         if (userDto.getCircs() != null) {
+            int circIndex = Integer.parseInt(userDto.getCircs());
             String circs = usersEntity.getCircs();
             try {
-                StringBuilder builder = new StringBuilder(circs);
-                builder.insert(Integer.parseInt(userDto.getCircs()), '1');
-                circs = builder.substring(CIRCS_COUNT);
-                if (circs.length() > 3) throw new RuntimeException();
+                char serverCirc = circs.charAt(Integer.parseInt(userDto.getCircs()));
+                if (serverCirc == CIRC_IS_USED) {
+                    return userDto;
+                } else {
+                    circs = circs.substring(0, circIndex) + '1' + circs.substring(circIndex + 1);
+                    if (circs.length() > 3) return userDto;
+                }
             } catch (RuntimeException e) {
                 return userDto;
             }
             if (sumOfCircsInString(circs) > CIRCS_COUNT || circs.length() > CIRCS_COUNT) {
                 return userDto;
             }
+            userRepos.updateCircumstances(SingleCircumstanceUpdateDto.builder()
+                    .userId(String.valueOf(usersEntity.getUser()))
+                    .circumstance(circs)
+                    .vkToken(null).build());
             return updateCoinsFromCircs(userDto, usersEntity);
         }
 
@@ -156,11 +165,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateCircumstances(SingleCircumstanceUpdateDto singleCircumstanceUpdateDto) {
-        UsersEntity usersEntity = userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId());
-        StringBuilder userCircs = new StringBuilder(usersEntity.getCircs());
-        userCircs.setCharAt((Integer.parseInt(singleCircumstanceUpdateDto.getCircumstance())), '1');
-        singleCircumstanceUpdateDto.setCircumstance(userCircs.toString());
-        userRepos.updateCircumstances(singleCircumstanceUpdateDto);
+//        UsersEntity usersEntity = userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId());
+//        StringBuilder userCircs = new StringBuilder(usersEntity.getCircs());
+//        userCircs.setCharAt((Integer.parseInt(singleCircumstanceUpdateDto.getCircumstance())), '1');
+//        singleCircumstanceUpdateDto.setCircumstance(userCircs.toString());
+//        userRepos.updateCircumstances(singleCircumstanceUpdateDto);
         return userDtoAllFieldsBuilder(userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId()));
     }
 
