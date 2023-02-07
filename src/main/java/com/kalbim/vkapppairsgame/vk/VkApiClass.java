@@ -17,6 +17,7 @@ import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.ServiceClientCredentialsFlowResponse;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
+import com.vk.api.sdk.queries.notifications.NotificationsSendMessageQuery;
 import com.vk.api.sdk.queries.secure.SecureSendNotificationQuery;
 import com.vk.api.sdk.queries.users.UsersGetQuery;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class VkApiClass {
     @Value("${vk.service.access.key}")
     private String serviceAccessKey;
 
+    private static final String NOTIFICATION_STRING = "Привет! Тебе доступна новая игра. И не забудь заглянуть в раздел \"Ещё монеты\": там есть задания с дополнительными монетами!";
     private static final String ENCODING = "UTF-8";
 
     public String checkForCorrectUserByKey(String url) throws Exception {
@@ -108,10 +110,13 @@ public class VkApiClass {
 
     public void sendNotification(List<Integer> users) throws ClientException, ApiException {
         VkApiClient vkApiClient = getApiClient();
-        SecureSendNotificationQuery secureSendNotificationQuery = vkApiClient.secure().sendNotification(createServiceActor(vkApiClient), "Вам доступна новая игра");
-        secureSendNotificationQuery.userIds(users);
-        secureSendNotificationQuery.unsafeParam("access_token", getServiceAccessKey());
-        List<Integer> res = secureSendNotificationQuery.execute();
+        NotificationsSendMessageQuery notificationsSendMessageQuery = vkApiClient.notifications()
+                .sendMessage(createServiceActor(vkApiClient), NOTIFICATION_STRING, users);
+//        SecureSendNotificationQuery secureSendNotificationQuery = vkApiClient.secure().sendNotification(createServiceActor(vkApiClient), "Вам доступна новая игра");
+//        secureSendNotificationQuery.userIds(users);
+//        secureSendNotificationQuery.unsafeParam("access_token", getServiceAccessKey());
+//        List<Integer> res = secureSendNotificationQuery.execute();
+        notificationsSendMessageQuery.execute();
     }
 
     public List<GetResponse> getUsers(List<String> entityList) throws ClientException, ApiException {

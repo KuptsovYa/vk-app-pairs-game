@@ -11,13 +11,12 @@ import java.text.SimpleDateFormat;
 @Service
 public class TimeServiceImpl implements TimeService{
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private static Logger log = LoggerFactory.getLogger(TimeServiceImpl.class);
 
     @Override
     public ServerTimeDto returnServerTime() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        log.info(timestamp.toString());
-        return ServerTimeDto.builder().serverTime(sdf.format(timestamp)).build();
+        return ServerTimeDto.builder().serverTime(SIMPLE_DATE_FORMAT.format(timestamp)).build();
     }
 }

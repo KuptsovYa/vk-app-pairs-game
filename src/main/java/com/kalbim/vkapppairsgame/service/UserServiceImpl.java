@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
         List<UsersEntity> usersEntities = userRepos.getAllPlayersWithNotifications();
         Integer[] idsArray = usersEntities.stream().map(UsersEntity::getUser).toArray(Integer[]::new);
         List<Integer> idsList = new ArrayList<>();
-        for (int i = 0; i <= idsArray.length; i++) {
+        for (int i = 0; i <= idsArray.length - 1; i++) {
             idsList.add(idsArray[i]);
             if (i % 100 == 0) { //just try to not forget return value to 100
                 vkApiClass.sendNotification(idsList);

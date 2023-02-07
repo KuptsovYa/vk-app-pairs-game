@@ -36,6 +36,12 @@ public class PromoServiceImpl implements PromoService{
             PromoEntity pe = promoRepos.getPromoByCoins(playerCoinsDto);
             return PromoDto.builder().promo(pe.getPromo()).build();
         }
+        // In case when user overflow coins - validation is no more needed
+        if (usersEntity.getCoins() >= 1100) {
+            playerCoinsDto.setCoins("1000");
+            PromoEntity pe = promoRepos.getPromoByCoins(playerCoinsDto);
+            return PromoDto.builder().promo(pe.getPromo()).build();
+        }
         throw new InvalidDataAccessApiUsageException("Incorrect coins value");
     }
 
