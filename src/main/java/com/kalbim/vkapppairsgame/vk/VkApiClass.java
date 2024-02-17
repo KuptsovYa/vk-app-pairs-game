@@ -112,16 +112,13 @@ public class VkApiClass {
         VkApiClient vkApiClient = getApiClient();
         NotificationsSendMessageQuery notificationsSendMessageQuery = vkApiClient.notifications()
                 .sendMessage(createServiceActor(vkApiClient), NOTIFICATION_STRING, users);
-//        SecureSendNotificationQuery secureSendNotificationQuery = vkApiClient.secure().sendNotification(createServiceActor(vkApiClient), "Вам доступна новая игра");
-//        secureSendNotificationQuery.userIds(users);
-//        secureSendNotificationQuery.unsafeParam("access_token", getServiceAccessKey());
-//        List<Integer> res = secureSendNotificationQuery.execute();
         notificationsSendMessageQuery.execute();
     }
 
     public List<GetResponse> getUsers(List<String> entityList) throws ClientException, ApiException {
         VkApiClient vkApiClient = getApiClient();
-        UsersGetQuery usersReq = vkApiClient.users().get(createServiceActor(vkApiClient));
+
+        UsersGetQuery usersReq = vkApiClient.users().get(new ServiceActor(Integer.parseInt(getApplicationId()), getServiceAccessKey()));
         usersReq.userIds(entityList);
         usersReq.lang(RU);
         usersReq.fields(PHOTO_100, FIRST_NAME_NOM, LAST_NAME_NOM, LANGUAGE);

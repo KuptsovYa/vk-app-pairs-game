@@ -22,4 +22,7 @@ public class UserDto {
     private String circs;
     @JsonProperty("vkToken")
     private String vkToken;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer dailyChallengeCount;
 }

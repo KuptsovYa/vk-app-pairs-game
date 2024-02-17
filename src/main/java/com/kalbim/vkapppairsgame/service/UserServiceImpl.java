@@ -5,7 +5,6 @@ import com.kalbim.vkapppairsgame.entity.LeaderBoardEntity;
 import com.kalbim.vkapppairsgame.entity.UsersEntity;
 import com.kalbim.vkapppairsgame.repos.UserRepos;
 import com.kalbim.vkapppairsgame.vk.VkApiClass;
-import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,18 +29,22 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepos userRepos;
     private final VkApiClass vkApiClass;
+    private final DailyCheckService dailyCheckService;
 
     @Autowired
-    public UserServiceImpl(UserRepos userRepos, VkApiClass vkApiClass) {
+    public UserServiceImpl(UserRepos userRepos, VkApiClass vkApiClass, DailyCheckService dailyCheckService) {
         this.userRepos = userRepos;
         this.vkApiClass = vkApiClass;
+        this.dailyCheckService = dailyCheckService;
     }
 
+    @Transactional
     public UserDto getAllDataOfUser(String userId) {
         UsersEntity usersEntity = userRepos.getAllUserData(userId);
-        return userDtoAllFieldsBuilder(usersEntity);
+        return userDtoAllFieldsBuilder(usersEntity, dailyCheckService.updateDailyCheckinValue(userId));
     }
 
+    @Transactional
     public UserDto updateUserData(UserDto userDto) {
         UsersEntity usersEntity = userRepos.getAllUserData(userDto.getUserId());
         if (userDto.getCircs() != null) {
@@ -71,16 +75,17 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDto updateCoinsFromCircs(UserDto userDto, UsersEntity usersEntity) {
-        if (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) {
-            userDto.setCoins(String.valueOf(usersEntity.getCoins() + 10));
-        }
+        String resCoins = String.valueOf(Math.min(Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins(), 10));
+
+        userDto.setCoins(resCoins);
         userDto.setGameCount("0");
-        userRepos.updateUserData(userDto, (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) ? "10"
-                : String.valueOf(Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins()));
-        return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
+        userRepos.updateUserData(userDto, resCoins);
+        return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()), null);
     }
 
     private UserDto updateCoinsFromGames(UserDto userDto, UsersEntity usersEntity) {
+        String resCoins = String.valueOf(Math.min(Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins(), 10)
+                * dailyCheckService.getMultiplier(userDto.getUserId()));
         //first case with default update coins
         if (usersEntity.getGameCount() <= 0) {
             return userDto;
@@ -90,9 +95,8 @@ public class UserServiceImpl implements UserService {
         }
         //Its must be one coz in update we are making gameCount - value that comes from this method
         userDto.setGameCount("1");
-        userRepos.updateUserData(userDto, (Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins() > 10) ? "10"
-                : String.valueOf(Integer.parseInt(userDto.getCoins()) - usersEntity.getCoins()));
-        return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()));
+        userRepos.updateUserData(userDto, resCoins);
+        return userDtoAllFieldsBuilder(userRepos.getAllUserData(userDto.getUserId()), null);
     }
 
     private int sumOfCircsInString(String circs) {
@@ -164,26 +168,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDto updateCircumstances(SingleCircumstanceUpdateDto singleCircumstanceUpdateDto) {
 //        UsersEntity usersEntity = userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId());
 //        StringBuilder userCircs = new StringBuilder(usersEntity.getCircs());
 //        userCircs.setCharAt((Integer.parseInt(singleCircumstanceUpdateDto.getCircumstance())), '1');
 //        singleCircumstanceUpdateDto.setCircumstance(userCircs.toString());
 //        userRepos.updateCircumstances(singleCircumstanceUpdateDto);
-        return userDtoAllFieldsBuilder(userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId()));
+        return userDtoAllFieldsBuilder(userRepos.getAllUserData(singleCircumstanceUpdateDto.getUserId()), null);
     }
 
-    private UserDto userDtoAllFieldsBuilder(UsersEntity entity) {
+    private UserDto userDtoAllFieldsBuilder(UsersEntity entity, Integer dayCount) {
         return UserDto.builder()
                 .userId(String.valueOf(entity.getUser()))
                 .gameCount(String.valueOf(entity.getGameCount()))
                 .coins(String.valueOf(entity.getCoins()))
                 .notifications(String.valueOf(entity.getNotifications()))
                 .circs(entity.getCircs())
+                .dailyChallengeCount(dayCount)
                 .build();
     }
 
     @Override
+    @Transactional
     public void updateNotificationStatus(UserDto userDto) {
         userRepos.updateNotificationsStatus(userDto);
     }

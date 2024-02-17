@@ -31,14 +31,13 @@ public class RestRequestHandler {
         this.vkApiClass = vkApiClass;
     }
 
-    @PostMapping("api/getUserData/{vkUserId}")
-    @Transactional
-    public UserDto getAllUserData(@PathVariable String vkUserId, @RequestBody UserDto userDto) {
-        try {
+    @PostMapping("v1/api/getUserData/{vkUserId}")
+    public UserDto getAllUserData(@PathVariable String vkUserId, @RequestBody UserDto userDto) throws Exception {
+//        try {
             userDto.setUserId(vkApiClass.checkForCorrectUserByKey(userDto.getVkToken()));
-        } catch (Exception e) {
-            throw new InvalidDataAccessApiUsageException(e.getMessage());
-        }
+//        } catch (Exception e) {
+//            throw new InvalidDataAccessApiUsageException(e.getMessage(),);
+//        }
         return userService.getAllDataOfUser(userDto.getUserId());
     }
 
