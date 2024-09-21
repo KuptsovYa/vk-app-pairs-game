@@ -43,27 +43,25 @@ public class DailyCheckService {
             dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), 0);
             return 0;
         }
-
-        int currentCounterValue = entity.getDayCount();
-        log.info("Current counter value: {}, user {}", currentCounterValue, entity.getUser());
+		
+		int currentCounterValue = entity.getDayCount();
+		if (isSameDayLogin(entity)) {
+            return currentCounterValue;
+        }
+		
+		if (isDailyChallengeCompleted(entity)) {
+            currentCounterValue++;
+            log.info("DailyChallenge completed value: {}, user {}", currentCounterValue, entity.getUser());
+            dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), currentCounterValue);
+        }
+		
+		log.info("Current counter value: {}, user {}", currentCounterValue, entity.getUser());
         if (currentCounterValue > DAILY_CHALLENGE_MAX_VAL) {
             dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), 0);
             return 0;
         }
-
-        if (isSameDayLogin(entity)) {
-            return currentCounterValue;
-        }
-
-        if (isDailyChallengeCompleted(entity)) {
-            currentCounterValue++;
-            log.info("DailyChallenge completed value: {}, user {}", currentCounterValue, entity.getUser());
-            dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), currentCounterValue);
-            return currentCounterValue;
-        }
-
-        dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), 0);
-        return 0;
+		
+        return currentCounterValue;
     }
 
     private boolean isSameDayLogin(DailyCheckEntity entity) {
