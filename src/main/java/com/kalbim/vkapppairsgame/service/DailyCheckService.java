@@ -48,8 +48,9 @@ public class DailyCheckService {
 		if (isSameDayLogin(entity)) {
             return currentCounterValue;
         }
-		
-		if (isDailyChallengeCompleted(entity)) {
+
+        boolean dailyResult = isDailyChallengeCompleted(entity);
+		if (dailyResult) {
             currentCounterValue++;
             log.info("DailyChallenge completed value: {}, user {}", currentCounterValue, entity.getUser());
             dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), currentCounterValue);
@@ -60,7 +61,10 @@ public class DailyCheckService {
             dailyCheckRepo.insertNewLastLoginDate(user, Timestamp.valueOf(LocalDateTime.now()), 0);
             return 0;
         }
-		
+
+        if (!dailyResult) {
+            return 0;
+        }
         return currentCounterValue;
     }
 
