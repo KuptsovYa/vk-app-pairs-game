@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,13 +54,13 @@ public class UserReposImpl implements UserRepos {
     }
 
     @Override
-    public void updateUserData(UserDto userDto, String diffForLeadBoard) {
-        Object[] params = new Object[]{userDto.getCoins(), userDto.getGameCount(),
+    public void updateUserData(UserDto userDto, String coins) {
+        Object[] params = new Object[]{coins, userDto.getGameCount(),
                 userDto.getUserId()};
-        String updateRequest = "Update users set coins = ?, gameCount = gameCount - ? where user = ?;";
+        String updateRequest = "Update users set coins = coins + ?, gameCount = gameCount - ? where user = ?;";
         getJdbcOperations().update(updateRequest, params);
 
-        params = new Object[]{diffForLeadBoard, userDto.getUserId()};
+        params = new Object[]{coins, userDto.getUserId()};
         updateRequest = "update leaderBoard set coins = coins + ? where userId = ?";
         getJdbcOperations().update(updateRequest, params);
     }

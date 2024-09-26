@@ -10,6 +10,5 @@ import java.util.List;
 public interface PromoRepos {
 
     PromoEntity getPromoByCoins(PlayerCoinsDto playerCoinsDto);
-    public List<PromoEntity> getUsersPromoList(UserPromoDto userPromoDto);
-
+    List<PromoEntity> getUsersPromoList(UserPromoDto userPromoDto);
 }

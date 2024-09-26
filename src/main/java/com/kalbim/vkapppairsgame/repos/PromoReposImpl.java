@@ -23,16 +23,17 @@ public class PromoReposImpl implements PromoRepos{
     @Override
     public PromoEntity getPromoByCoins(PlayerCoinsDto playerCoinsDto) {
         String selectRequest = "Select idpromo, promo, price, used from promo where price = ?" +
-                " and used <> 1";
+                " and used = 0 limit 1";
         Object[] params = new Object[]{playerCoinsDto.getCoins()};
         PromoEntity promoEntity = getJdbcOperations().queryForObject(selectRequest,
                 params, new BeanPropertyRowMapper<>(PromoEntity.class));
 
-        params[0] = promoEntity.getIdpromo();
-        String updatePromoRequest = "Update promo set used = 1 where idPromo = ?;";
+        params = new Object[] {playerCoinsDto.getUserId(), promoEntity.getIdpromo()};
+        String updatePromoRequest = "Update promo set used = ? where idPromo = ?;";
         getJdbcOperations().update(updatePromoRequest, params);
-        String updateUsersRequest = "update users set coins = coins - ? where user = ?;";
+
         params = new Object[]{promoEntity.getPrice(), playerCoinsDto.getUserId()};
+        String updateUsersRequest = "update users set coins = coins - ? where user = ?;";
         getJdbcOperations().update(updateUsersRequest, params);
         return promoEntity;
     }

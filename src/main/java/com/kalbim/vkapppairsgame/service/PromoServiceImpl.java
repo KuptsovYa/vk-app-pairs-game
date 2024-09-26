@@ -10,6 +10,7 @@ import com.kalbim.vkapppairsgame.repos.UserRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class PromoServiceImpl implements PromoService{
     }
 
     @Override
+    @Transactional
     public PromoDto returnPromo(PlayerCoinsDto playerCoinsDto) {
         UsersEntity usersEntity = userRepos.getAllUserData(playerCoinsDto.getUserId());
         if (usersEntity.getCoins() - Integer.parseInt(playerCoinsDto.getCoins()) < 0) {
@@ -36,9 +38,16 @@ public class PromoServiceImpl implements PromoService{
             PromoEntity pe = promoRepos.getPromoByCoins(playerCoinsDto);
             return PromoDto.builder().promo(pe.getPromo()).build();
         }
+        // In case when user overflow coins - validation is no more needed
+        if (usersEntity.getCoins() >= 1100) {
+            playerCoinsDto.setCoins("1000");
+            PromoEntity pe = promoRepos.getPromoByCoins(playerCoinsDto);
+            return PromoDto.builder().promo(pe.getPromo()).build();
+        }
         throw new InvalidDataAccessApiUsageException("Incorrect coins value");
     }
 
+    @Override
     public UserPromoDto getUsersPromoList(UserPromoDto userPromoDto) {
         List<PromoEntity> promoEntityList = promoRepos.getUsersPromoList(userPromoDto);
         List<PromoDto> promoDtos = promoEntityList.stream().map(promoEntity -> PromoDto.builder()
@@ -50,4 +59,5 @@ public class PromoServiceImpl implements PromoService{
         userPromoDto.setVkToken(null);
         return userPromoDto;
     }
+
 }
